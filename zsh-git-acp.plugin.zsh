@@ -1,3 +1,8 @@
+exists(){
+    #alternative is command -v
+    type "$1" >/dev/null 2>&1
+}
+
 gitCommitAndPush(){
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
@@ -66,7 +71,11 @@ gitFunc() {
 
     local __old="$LESS"
     unset LESS
-    gitSdiffColorizer.pl | less -R
+    if exists gitSdiffColorizer.pl;then
+        gitSdiffColorizer | less -R
+    else
+        git difftool -y -x HEAD * | less -R
+    fi
     export LESS="$__old"
     echo
     printf "\x1b[4;34m>>>>>> Push? \x1b[0m"
