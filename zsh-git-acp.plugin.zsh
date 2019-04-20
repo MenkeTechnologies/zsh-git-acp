@@ -72,7 +72,7 @@ gitFunc() {
     local __old="$LESS"
     unset LESS
     if exists gitSdiffColorizer.pl;then
-        gitSdiffColorizer | less -R
+        gitSdiffColorizer.pl | less -R
     else
         git difftool -y -x HEAD * | less -R
     fi
