@@ -114,7 +114,16 @@ gitFuncNoCheck() {
 
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
-       [[ "$currentDir" == "$dir" ]] && return 1
+        if [[ "$currentDir" == "$dir" ]]; then
+            printf "\x1b[0;1;31m"
+            print -sr "$BUFFER"
+            echo
+            printf "BLACKLISTED: $(pwd -P)" >&2
+            BUFFER=""
+            printf "\x1b[0m"
+            zle .accept-line
+            return 1
+        fi
     done
 
     git status &> /dev/null || {
