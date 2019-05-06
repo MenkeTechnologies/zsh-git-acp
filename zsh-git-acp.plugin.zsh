@@ -166,8 +166,8 @@ gitFuncNoCheck() {
 zle -N gitFunc
 zle -N gitFuncNoCheck
 
-bindkey -M viins '^F^S' gitFuncNoCheck
-bindkey -M vicmd '^F^S' gitFuncNoCheck
-bindkey -M viins '^S' gitFunc
-bindkey -M vicmd '^S' gitFunc
+bindkey -M viins '^S' gitFuncNoCheck
+bindkey -M vicmd '^S' gitFuncNoCheck
+bindkey -M viins '^F^S' gitFunc
+bindkey -M vicmd '^F^S' gitFunc
 
