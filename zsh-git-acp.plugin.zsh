@@ -12,7 +12,7 @@ gitCommitAndPush(){
     done
 
     echo
-    git pull --ff
+    git pull --no-rebase
     git add .
     git commit -m "$1"
     git push
