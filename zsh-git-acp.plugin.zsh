@@ -12,7 +12,7 @@ gitCommitAndPush(){
     done
 
     echo
-    git pull
+    git pull --ff
     git add .
     git commit -m "$1"
     git push
