@@ -3,7 +3,7 @@ This plugin adds various git aliases and two zle keybindings.
 
 ## keybindings
 The zle keybindings both take the current BUFFER as the commit message and then run git add, commit and push hence the name git-acp.
-This the is the gitFunc widget bound to ^S (like many apps bind save from menus).  There is no confirmation before the add, commit and push.
+This is the gitFunc widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
 The gitFuncNoCheck widget does the same but only after a side by side diff piped into less and a confirmation prompt.
 This is bound to ^F^S.
 
