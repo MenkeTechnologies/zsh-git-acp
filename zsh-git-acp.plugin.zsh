@@ -1,4 +1,3 @@
-alias gil='vim .git/info/exclude'
 alias glu='git pull upstream'
 alias glom='git pull origin master'
 alias glum='git pull upstream master'
