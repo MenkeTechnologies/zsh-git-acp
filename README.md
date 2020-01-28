@@ -21,7 +21,6 @@ bindkey -M vicmd '^F^S' gitFunc
 ## 56 git aliases
 
 ```sh
-alias gil='vim .git/info/exclude'
 alias glu='git pull upstream'
 alias glom='git pull origin master'
 alias glum='git pull upstream master'
@@ -45,6 +44,7 @@ alias gpfom='git push --force origin master:master'
 alias gpfum='git push --force upstream master:master'
 alias gpfod='git push --force origin dev'
 alias gpfud='git push --force upstream dev'
+alias gpfoat='git push -f origin --all && git push -f origin --tags'
 alias grom='git reset --hard origin/master'
 alias grum='git reset --hard upstream/master'
 alias grod='git reset --hard origin/dev'
