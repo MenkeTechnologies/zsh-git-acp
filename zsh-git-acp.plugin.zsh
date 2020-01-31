@@ -1,6 +1,6 @@
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
-alias glfr='git pull --force --rebase'
+alias glrf='git pull --rebase --force'
 
 alias glom='git pull origin master:master'
 alias glrom='git pull --rebase origin master:master'
