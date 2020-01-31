@@ -1,8 +1,19 @@
 alias glu='git pull upstream'
+alias glr='git pull --rebase'
+alias glfr='git pull --force --rebase'
+
 alias glom='git pull origin master:master'
+alias glrom='git pull --rebase origin master:master'
+
 alias glum='git pull upstream master:master'
+alias glrum='git pull --rebase upstream master:master'
+
 alias glod='git pull origin dev:dev'
+alias glrod='git pull --rebase origin dev:dev'
+
 alias glud='git pull upstream dev:dev'
+alias glrud='git pull --rebase upstream dev:dev'
+
 alias gpa='git push --all'
 alias gpo='git push origin'
 alias gpoa='git push origin --all'
@@ -12,12 +23,25 @@ alias gpom='git push origin master:master'
 alias gpum='git push upstream master:master'
 alias gpod='git push origin dev:dev'
 alias gpud='git push upstream dev:dev'
+
 alias glfo='git pull --force origin'
+alias glrfo='git pull --rebase --force origin'
+
 alias glfu='git pull --force upstream'
+alias glrfu='git pull --rebase --force upstream'
+
 alias glfom='git pull --force origin master:master'
+alias glrfom='git pull --rebase --force origin master:master'
+
 alias glfum='git pull --force upstream master:master'
+alias glrfum='git pull --rebase --force upstream master:master'
+
 alias glfod='git pull --force origin dev:dev'
+alias glrfod='git pull --rebase --force origin dev:dev'
+
 alias glfud='git pull --force upstream dev:dev'
+alias glrfud='git pull --rebase --force upstream dev:dev'
+
 alias gpfo='git push --force origin'
 alias gpfu='git push --force upstream'
 alias gpfom='git push --force origin master:master'
