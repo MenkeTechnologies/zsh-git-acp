@@ -24,6 +24,11 @@ alias gpum='git push upstream master:master'
 alias gpod='git push origin dev:dev'
 alias gpud='git push upstream dev:dev'
 
+alias gpot='git push origin --tags'
+alias gpfot='git push --force origin --tags'
+alias gput='git push upstream--tags'
+alias gpfut='git push --force uptream --tags'
+
 alias glfo='git pull --force origin'
 alias glrfo='git pull --rebase --force origin'
 
@@ -48,7 +53,10 @@ alias gpfom='git push --force origin master:master'
 alias gpfum='git push --force upstream master:master'
 alias gpfod='git push --force origin dev:dev'
 alias gpfud='git push --force upstream dev:dev'
+
 alias gpfoat='git push -f origin --all && git push -f origin --tags'
+alias gpfuat='git push -f upstream --all && git push -f origin --tags'
+
 alias grom='git reset --hard origin/master'
 alias grum='git reset --hard upstream/master'
 alias grod='git reset --hard origin/dev'
@@ -77,6 +85,10 @@ alias glf='git pull --force'
 alias gla='git pull --all'
 alias glat='git pull --all --tags'
 alias glt='git pull --tags'
+
+alias glot='git pull origin --tags'
+alias glut='git pull upstream --tags'
+
 alias glfa='git pull --force --all'
 alias glfat='git pull --force --all --tags'
 alias glft='git pull --force --tags'
