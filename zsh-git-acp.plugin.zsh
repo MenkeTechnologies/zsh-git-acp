@@ -87,7 +87,10 @@ alias glat='git pull --all --tags'
 alias glt='git pull --tags'
 
 alias glot='git pull origin --tags'
+alias glfot='git pull --force origin --tags'
+
 alias glut='git pull upstream --tags'
+alias glfut='git pull --force upstream --tags'
 
 alias glfa='git pull --force --all'
 alias glfat='git pull --force --all --tags'
