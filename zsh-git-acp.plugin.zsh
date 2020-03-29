@@ -54,6 +54,8 @@ alias gpfum='git push --force upstream master:master'
 alias gpfod='git push --force origin dev:dev'
 alias gpfud='git push --force upstream dev:dev'
 
+alias gpuat='git push upstream --all && git push upstream --tags'
+
 alias gpfoat='git push -f origin --all && git push -f origin --tags'
 alias gpfuat='git push -f upstream --all && git push -f origin --tags'
 
