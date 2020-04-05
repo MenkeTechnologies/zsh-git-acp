@@ -106,6 +106,8 @@ alias gac='git add . && git commit -m ""'
 alias gbv='git branch -a -vv'
 alias allRebase='git rebase -i $(git rev-list --max-parents=0 HEAD)'
 
+alias gt='git tag'
+
 exists(){
     #alternative is command -v
     type "$1" >/dev/null 2>&1
