@@ -27,7 +27,7 @@ alias gpud='git push upstream dev:dev'
 alias gpot='git push origin --tags'
 alias gpfot='git push --force origin --tags'
 alias gput='git push upstream --tags'
-alias gpfut='git push --force uptream --tags'
+alias gpfut='git push --force upstream --tags'
 
 alias glfo='git pull --force origin'
 alias glrfo='git pull --rebase --force origin'
