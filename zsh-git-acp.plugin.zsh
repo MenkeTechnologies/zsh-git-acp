@@ -1,3 +1,5 @@
+#{{{                    MARK:alias
+#**************************************************************
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
 alias glrf='git pull --rebase --force'
@@ -107,7 +109,13 @@ alias gbv='git branch -a -vv'
 alias allRebase='git rebase -i $(git rev-list --max-parents=0 HEAD)'
 
 alias gt='git tag'
+alias gfa='git fetch --all --prune --tags'
+alias gffa='git fetch -f --all --prune --tags'
 
+#}}}***********************************************************
+
+#{{{                    MARK:git fn
+#**************************************************************
 exists(){
     #alternative is command -v
     type "$1" >/dev/null 2>&1
@@ -272,7 +280,10 @@ gitFuncNoCheck() {
     fi
 
 }
+#}}}***********************************************************
 
+#{{{                    MARK:ZLE keybind
+#**************************************************************
 zle -N gitFunc
 zle -N gitFuncNoCheck
 
@@ -280,4 +291,5 @@ bindkey -M viins '^S' gitFuncNoCheck
 bindkey -M vicmd '^S' gitFuncNoCheck
 bindkey -M viins '^F^S' gitFunc
 bindkey -M vicmd '^F^S' gitFunc
+#}}}***********************************************************
 
