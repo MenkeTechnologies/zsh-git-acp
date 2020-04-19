@@ -16,6 +16,19 @@ alias glrod='git pull --rebase origin dev:dev'
 alias glud='git pull upstream dev:dev'
 alias glrud='git pull --rebase upstream dev:dev'
 
+alias glomd='git pull origin master:dev'
+alias gludm='git pull upstream dev:master'
+
+alias glromd='git pull --rebase origin master:dev'
+alias glrudm='git pull --rebase upstream dev:master'
+
+alias glodm='git pull origin dev:master'
+alias glumd='git pull upstream master:dev'
+
+alias glrodm='git pull --rebase origin dev:master'
+alias glrumd='git pull --rebase upstream master:dev'
+
+
 alias gpa='git push --all'
 alias gpo='git push origin'
 alias gpoa='git push origin --all'
@@ -44,17 +57,37 @@ alias glfum='git pull --force upstream master:master'
 alias glrfum='git pull --rebase --force upstream master:master'
 
 alias glfod='git pull --force origin dev:dev'
-alias glrfod='git pull --rebase --force origin dev:dev'
-
 alias glfud='git pull --force upstream dev:dev'
+
+alias glrfod='git pull --rebase --force origin dev:dev'
 alias glrfud='git pull --rebase --force upstream dev:dev'
+
+alias glfomd='git pull --force origin master:dev'
+alias glfudm='git pull --force upstream dev:master'
+
+alias glrfomd='git pull --rebase --force origin masterdev'
+alias glrfudm='git pull --rebase --force upstream dev:master'
+
+alias glfodm='git pull --force origin dev:master'
+alias glfumd='git pull --force upstream masterdev'
+
+alias glrfodm='git pull --rebase --force origin dev:master'
+alias glrfumd='git pull --rebase --force upstream masterdev'
 
 alias gpfo='git push --force origin'
 alias gpfu='git push --force upstream'
+
 alias gpfom='git push --force origin master:master'
-alias gpfum='git push --force upstream master:master'
 alias gpfod='git push --force origin dev:dev'
+
+alias gpfum='git push --force upstream master:master'
 alias gpfud='git push --force upstream dev:dev'
+
+alias gpfomd='git push --force origin master:dev'
+alias gpfodm='git push --force origin dev:master'
+
+alias gpfumd='git push --force upstream master:dev'
+alias gpfudm='git push --force upstream dev:master'
 
 alias gpuat='git push upstream --all && git push upstream --tags'
 
