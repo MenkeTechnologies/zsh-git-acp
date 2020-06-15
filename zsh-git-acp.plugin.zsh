@@ -155,6 +155,7 @@ exists(){
 }
 
 gitCommitAndPush(){
+    remotes=$(git remote)
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
        if [[ "$currentDir" == "$dir" ]]; then
@@ -163,10 +164,17 @@ gitCommitAndPush(){
     done
 
     echo
-    git pull --no-rebase
+
+    if [[ -n $remotes ]]; then
+        git pull --no-rebase
+    fi
+
     git add .
     git commit -m "$1"
-    git push
+
+    if [[ -n $remotes ]]; then
+        git push
+    fi
 }
 
 gitFunc() {
