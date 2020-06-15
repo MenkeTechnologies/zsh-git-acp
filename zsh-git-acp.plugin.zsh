@@ -149,12 +149,37 @@ alias gffa='git fetch -f --all --prune --tags'
 
 #{{{                    MARK:git fn
 #**************************************************************
+(( $+functions[exists] )) ||
 exists(){
     #alternative is command -v
     type "$1" >/dev/null 2>&1
 }
 
+(( $+functions[isGitDir] )) ||
+isGitDir(){
+    command git rev-parse --git-dir 2> /dev/null 1>&2
+}
+
+(( $+functions[loggErr] )) ||
+loggErr(){
+    test -z "$1" && loggErr "need arg" >&2 && return 1
+    {
+        printf "ERROR: $@"
+    } >&2
+}
+
+(( $+functions[loggNotGit] )) ||
+loggNotGit() {
+
+    loggErr "$(pwd) is not a git dir"
+}
+
 gitCommitAndPush(){
+
+    if ! isGitDir; then
+        loggNotGit
+        return 1
+    fi
     remotes=$(git remote)
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
@@ -183,49 +208,38 @@ gitFunc() {
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
-            printf "\x1b[0;1;31m"
             print -sr "$BUFFER"
-            echo
-            printf "BLACKLISTED: $(pwd -P)" >&2
-            BUFFER=""
-            printf "\x1b[0m"
+            loggErr "BLACKLISTED: $(pwd -P)"
+            zle .kill-whole-line
             zle .accept-line
             return 1
         fi
     done
 
-    git status &> /dev/null || {
-        printf "\x1b[0;1;31m"
-        print -sr "$BUFFER"
-        printf "NOT GIT DIR: $(pwd -P)" >&2
-        printf "\x1b[0m"
+    if ! isGitDir; then
+        loggNotGit
         zle .kill-whole-line
         zle .accept-line-and-down-history
-        return 0
-    }
+        return 1
+    fi
 
     print -r -- "$BUFFER" | grep -q -E '\S' || {
-        printf "\x1b[0;1;31m"
         print -sr "$BUFFER"
-        printf "No commit message." >&2
-        printf "\x1b[0m"
+        loggErr "No commit message"
         zle .kill-whole-line
+        zle .accept-line
         zle .accept-line-and-down-history
-        return 0
+        return 1
     }
     #leaky simonoff theme so reset ANSI escape sequences
 	git add .
 
 	git status | grep -q "nothing to commit" && {
-        printf "\x1b[0;1;31m"
         print -sr "$BUFFER"
-        echo
-        printf "Nothing to commit" >&2
-        echo
-        BUFFER=""
-        printf "\x1b[0m"
+        loggErr "Nothing to commit"
+        zle .kill-whole-line
         zle .accept-line
-        return 0
+        return 1
 	}
 
     local __old="$LESS"
@@ -245,19 +259,13 @@ gitFunc() {
     fi
 
     if [[ "$REPLY" == 'y' ]]; then
-        printf "\x1b[34m"
+        # blue foreground color git info
+        printf "\x1b[0;34m"
         gitCommitAndPush "$BUFFER" && {
             print -sr "$BUFFER"
             zle .kill-whole-line
             printf "\x1b[0m"
             zle .redisplay
-        } || {
-            printf "\x1b[0;1;31m"
-            print -sr "$BUFFER"
-            printf "BLACKLISTED: $(pwd -P)" >&2
-            BUFFER=""
-            printf "\x1b[0m"
-            zle .accept-line
         }
     else
             print -sr "$BUFFER"
@@ -274,50 +282,45 @@ gitFuncNoCheck() {
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
-            printf "\x1b[0;1;31m"
             print -sr "$BUFFER"
-            echo
-            printf "BLACKLISTED: $(pwd -P)" >&2
-            BUFFER=""
-            printf "\x1b[0m"
+            loggErr "BLACKLISTED: $(pwd -P)"
+            zle .kill-whole-line
             zle .accept-line
             return 1
         fi
     done
 
-    git status &> /dev/null || {
-        printf "\x1b[0;1;31m"
-        print -sr "$BUFFER"
-        printf "NOT GIT DIR: $(pwd -P)" >&2
-        printf "\x1b[0m"
+    if ! isGitDir; then
+        loggNotGit
         zle .kill-whole-line
         zle .accept-line-and-down-history
-        return 0
-    }
+        return 1
+    fi
 
     print -r -- "$BUFFER" | grep -q -E '\S' || {
-        printf "\x1b[0;1;31m"
         print -sr "$BUFFER"
-        printf "No commit message." >&2
-        printf "\x1b[0m"
+        loggErr "No commit message"
         zle .kill-whole-line
+        zle .accept-line
         zle .accept-line-and-down-history
-        return 0
+        return 1
     }
+
+	git status | grep -q "nothing to commit" && {
+        print -sr "$BUFFER"
+        loggErr "Nothing to commit"
+        zle .kill-whole-line
+        zle .accept-line
+        return 1
+	}
     #leaky simonoff theme so reset ANSI escape sequences
+    # blue foreground color git info
     printf "\x1b[0;34m"
 	if gitCommitAndPush "$BUFFER";then
 		print -sr "$BUFFER"
 		zle .kill-whole-line
 		printf "\x1b[0m"
 		zle .redisplay
-    else
-		printf "\x1b[0;1;31m"
-		print -sr "$BUFFER"
-		printf "BLACKLISTED: $(pwd -P)" >&2
-		BUFFER=""
-		printf "\x1b[0m"
-		zle .accept-line
     fi
 
 }
