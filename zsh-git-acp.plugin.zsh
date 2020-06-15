@@ -176,10 +176,21 @@ loggNotGit() {
 
 gitCommitAndPush(){
 
+    if [[ -z "$1" ]]; then
+        loggErr "No commit message"
+        return 1
+    fi
+
     if ! isGitDir; then
         loggNotGit
         return 1
     fi
+
+	git status | grep -q "nothing to commit" && {
+        loggErr "Nothing to commit"
+        return 1
+	}
+
     remotes=$(git remote)
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
