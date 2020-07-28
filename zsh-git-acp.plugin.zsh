@@ -28,6 +28,10 @@ alias glumd='git pull upstream master:dev'
 alias glrodm='git pull --rebase origin dev:master'
 alias glrumd='git pull --rebase upstream master:dev'
 
+alias grr='git remote remove'
+alias gre='git remote rename'
+alias grao='git remote add origin'
+alias grau='git remote add upstream'
 
 alias gpa='git push --all'
 alias gpo='git push origin'
