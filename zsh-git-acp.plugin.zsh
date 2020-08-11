@@ -180,6 +180,8 @@ loggNotGit() {
 
 gitCommitAndPush(){
 
+    local dir remotes currentDir
+
     if [[ -z "$1" ]]; then
         loggErr "No commit message"
         return 1
@@ -220,6 +222,8 @@ gitCommitAndPush(){
 gitFunc() {
     emulate -LR zsh
 
+    local currentDir dir __old
+
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
@@ -257,14 +261,17 @@ gitFunc() {
         return 1
 	}
 
-    local __old="$LESS"
+     __old="$LESS"
     unset LESS
+
     if exists gitSdiffColorizer.pl;then
         gitSdiffColorizer.pl | less -R
     else
         git difftool -y -x HEAD * | less -R
     fi
+
     export LESS="$__old"
+
     echo
     printf "\x1b[4;34m>>>>>> Push? \x1b[0m"
     if echo "$SHELL" | grep -q zsh ; then
@@ -293,6 +300,8 @@ gitFunc() {
 
 gitFuncNoCheck() {
     emulate -LR zsh
+
+    local currentDir dir remotes
 
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
