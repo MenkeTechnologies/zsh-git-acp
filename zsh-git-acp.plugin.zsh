@@ -1,5 +1,7 @@
 #{{{                    MARK:alias
 #**************************************************************
+alias glgf='git log --stat --format=fuller'
+
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
 alias glrf='git pull --rebase --force'
