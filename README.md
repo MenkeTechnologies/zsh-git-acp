@@ -1,18 +1,18 @@
 # zsh-git-acp
-This plugin adds various git aliases and two zle keybindings.
+This plugin adds various git aliases and two ZLE keybindings.
 
 ## keybindings
 The zle keybindings both take the current BUFFER as the commit message and then run git pull, add, commit and push hence the name git-acp.
 If there is no remote the pull and push steps will be omitted.
-This is the gitFunc widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
-The gitFuncNoCheck widget does the same but only after a side by side diff piped into less and a confirmation prompt.
+This is the gacpNoCheck widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
+The gacpCheckDiff widget does the same but only after a side by side diff piped into less and a confirmation prompt.
 This is bound to ^F^S.
 
 ```sh
-bindkey -M viins '^S' gitFuncNoCheck
-bindkey -M vicmd '^S' gitFuncNoCheck
-bindkey -M viins '^F^S' gitFunc
-bindkey -M vicmd '^F^S' gitFunc
+bindkey -M viins '^S' gacpNoCheck
+bindkey -M vicmd '^S' gacpNoCheck
+bindkey -M viins '^F^S' gacpCheckDiff
+bindkey -M vicmd '^F^S' gacpCheckDiff
 ```
 
 ## 115+ git aliases
