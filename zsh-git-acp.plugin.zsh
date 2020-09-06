@@ -1,3 +1,9 @@
+0="${${0:#$ZSH_ARGZERO}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/$0}"
+# util fns
+fpath+=("${0:h}/autoload")
+autoload -Uz "${0:h}/autoload/"*(.:t)
+
 #{{{                    MARK:alias
 #**************************************************************
 alias glgf='git log --stat --format=fuller'
@@ -180,186 +186,16 @@ loggNotGit() {
     loggErr "$(pwd) is not a git dir"
 }
 
-gitCommitAndPush(){
-
-    local dir remotes currentDir
-
-    if [[ -z "$1" ]]; then
-        loggErr "No commit message"
-        return 1
-    fi
-
-    if ! isGitDir; then
-        loggNotGit
-        return 1
-    fi
-
-	git status | grep -q "nothing to commit" && {
-        loggErr "Nothing to commit"
-        return 1
-	}
-
-    remotes=$(git remote)
-    currentDir="$(pwd -P)"
-    for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
-       if [[ "$currentDir" == "$dir" ]]; then
-           return 1
-       fi
-    done
-
-    echo
-
-    if [[ -n $remotes ]]; then
-        git pull --no-rebase
-    fi
-
-    git add .
-    git commit -m "$1"
-
-    if [[ -n $remotes ]]; then
-        git push
-    fi
-}
-
-gitFunc() {
-    emulate -LR zsh
-
-    local currentDir dir __old
-
-    currentDir="$(pwd -P)"
-    for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
-        if [[ "$currentDir" == "$dir" ]]; then
-            print -sr "$BUFFER"
-            loggErr "BLACKLISTED: $(pwd -P)"
-            zle .kill-whole-line
-            zle .accept-line
-            return 1
-        fi
-    done
-
-    if ! isGitDir; then
-        loggNotGit
-        zle .kill-whole-line
-        zle .accept-line-and-down-history
-        return 1
-    fi
-
-    print -r -- "$BUFFER" | grep -q -E '\S' || {
-        print -sr "$BUFFER"
-        loggErr "No commit message"
-        zle .kill-whole-line
-        zle .accept-line
-        zle .accept-line-and-down-history
-        return 1
-    }
-    #leaky simonoff theme so reset ANSI escape sequences
-	git add .
-
-	git status | grep -q "nothing to commit" && {
-        print -sr "$BUFFER"
-        loggErr "Nothing to commit"
-        zle .kill-whole-line
-        zle .accept-line
-        return 1
-	}
-
-     __old="$LESS"
-    unset LESS
-
-    if exists gitSdiffColorizer.pl;then
-        gitSdiffColorizer.pl | less -R
-    else
-        git difftool -y -x HEAD * | less -R
-    fi
-
-    export LESS="$__old"
-
-    echo
-    printf "\x1b[4;34m>>>>>> Push? \x1b[0m"
-    if echo "$SHELL" | grep -q zsh ; then
-        read -k 1
-    else
-        read -n 1
-    fi
-
-    if [[ "$REPLY" == 'y' ]]; then
-        # blue foreground color git info
-        printf "\x1b[0;34m"
-        gitCommitAndPush "$BUFFER" && {
-            print -sr "$BUFFER"
-            zle .kill-whole-line
-            printf "\x1b[0m"
-            zle .redisplay
-        }
-    else
-            print -sr "$BUFFER"
-            echo
-            zle .kill-whole-line
-            printf "\x1b[0m"
-            zle .redisplay
-    fi
-}
-
-gitFuncNoCheck() {
-    emulate -LR zsh
-
-    local currentDir dir remotes
-
-    currentDir="$(pwd -P)"
-    for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
-        if [[ "$currentDir" == "$dir" ]]; then
-            print -sr "$BUFFER"
-            loggErr "BLACKLISTED: $(pwd -P)"
-            zle .kill-whole-line
-            zle .accept-line
-            return 1
-        fi
-    done
-
-    if ! isGitDir; then
-        loggNotGit
-        zle .kill-whole-line
-        zle .accept-line-and-down-history
-        return 1
-    fi
-
-    print -r -- "$BUFFER" | grep -q -E '\S' || {
-        print -sr "$BUFFER"
-        loggErr "No commit message"
-        zle .kill-whole-line
-        zle .accept-line
-        zle .accept-line-and-down-history
-        return 1
-    }
-
-	git status | grep -q "nothing to commit" && {
-        print -sr "$BUFFER"
-        loggErr "Nothing to commit"
-        zle .kill-whole-line
-        zle .accept-line
-        return 1
-	}
-    #leaky simonoff theme so reset ANSI escape sequences
-    # blue foreground color git info
-    printf "\x1b[0;34m"
-	if gitCommitAndPush "$BUFFER";then
-		print -sr "$BUFFER"
-		zle .kill-whole-line
-		printf "\x1b[0m"
-		zle .redisplay
-    fi
-
-}
 #}}}***********************************************************
 
 #{{{                    MARK:ZLE keybind
 #**************************************************************
-zle -N gitFunc
-zle -N gitFuncNoCheck
+zle -N gacpCheckDiff
+zle -N gacpNoCheck
 
-bindkey -M viins '^S' gitFuncNoCheck
-bindkey -M vicmd '^S' gitFuncNoCheck
-bindkey -M viins '^F^S' gitFunc
-bindkey -M vicmd '^F^S' gitFunc
+bindkey -M viins '^S' gacpNoCheck
+bindkey -M vicmd '^S' gacpNoCheck
+bindkey -M viins '^F^S' gacpCheckDiff
+bindkey -M vicmd '^F^S' gacpCheckDiff
 #}}}***********************************************************
 
