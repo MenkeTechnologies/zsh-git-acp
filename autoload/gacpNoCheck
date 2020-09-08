@@ -6,35 +6,31 @@ gacpNoCheck() {
     currentDir="$(pwd -P)"
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
-            print -sr "$BUFFER"
-            loggErr "BLACKLISTED: $(pwd -P)"
-            zle .kill-whole-line
-            zle .accept-line
+            printf "\x1b[0;1;31m"
+            zle -R "BLACKLISTED: $(pwd -P)" && read -k 1
+            printf "\x1b[0m"
             return 1
         fi
     done
 
     if ! isGitDir; then
-        loggNotGit
-        zle .kill-whole-line
-        zle .accept-line-and-down-history
+        printf "\x1b[0;1;31m"
+        zle -R "ERROR: $(pwd) is not a git dir." && read -k 1
+        printf "\x1b[0m"
         return 1
     fi
 
     print -r -- "$BUFFER" | grep -q -E '\S' || {
-        print -sr "$BUFFER"
-        loggErr "No commit message"
-        zle .kill-whole-line
-        zle .accept-line
-        zle .accept-line-and-down-history
+        printf "\x1b[0;1;31m"
+        zle -R "ERROR: No commit message." && read -k 1
+        printf "\x1b[0m"
         return 1
     }
 
 	git status | grep -q "nothing to commit" && {
-        print -sr "$BUFFER"
-        loggErr "Nothing to commit"
-        zle .kill-whole-line
-        zle .accept-line
+        printf "\x1b[0;1;31m"
+        zle -R "ERROR: Nothing to commit." && read -k 1
+        printf "\x1b[0m"
         return 1
 	}
     #leaky simonoff theme so reset ANSI escape sequences
