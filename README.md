@@ -1,7 +1,31 @@
 # zsh-git-acp
 This plugin adds various git aliases and two ZLE keybindings.
 
-## keybindings
+## Install for Zinit
+> `~/.zshrc`
+```sh
+source "$HOME/.zinit/bin/zinit.zsh"
+zinit ice lucid nocompile
+zinit load MenkeTechnologies/zsh-git-acp
+```
+
+## Install for Oh My Zsh
+
+```sh
+cd "$HOME/.oh-my-zsh/custom/plugins" && git clone https://github.com/MenkeTechnologies/zsh-git-acp.git
+```
+
+Add `zsh-git-acp` to plugins array in ~/.zshrc
+
+## General Install
+
+```sh
+git clone https://github.com/MenkeTechnologies/zsh-git-acp.git
+```
+
+source zsh-git-acp.plugin.zsh from .zshrc
+
+## Keybindings
 The zle keybindings both take the current BUFFER as the commit message and then run git pull, add, commit and push hence the name git-acp.
 If there is no remote the pull and push steps will be omitted.
 This is the gacpNoCheck widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
@@ -134,28 +158,4 @@ alias gfa='git fetch --all --prune --tags'
 alias gffa='git fetch -f --all --prune --tags'
 alias glu='git pull upstream'
 ```
-
-## Install for Zinit
-> `~/.zshrc`
-```sh
-source "$HOME/.zinit/bin/zinit.zsh"
-zinit ice lucid nocompile
-zinit load MenkeTechnologies/zsh-git-acp
-```
-
-## Install for Oh My Zsh
-
-```sh
-cd "$HOME/.oh-my-zsh/custom/plugins" && git clone https://github.com/MenkeTechnologies/zsh-git-acp.git
-```
-
-Add `zsh-git-acp` to plugins array in ~/.zshrc
-
-## General Install
-
-```sh
-git clone https://github.com/MenkeTechnologies/zsh-git-acp.git
-```
-
-source zsh-git-acp.plugin.zsh from .zshrc
 
