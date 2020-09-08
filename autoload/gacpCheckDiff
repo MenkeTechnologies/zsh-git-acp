@@ -64,11 +64,11 @@ gacpCheckDiff() {
             printf "\x1b[0m"
             zle .redisplay
         }
+        printf "\x1b[0m"
     else
             print -sr "$BUFFER"
             echo
             zle .kill-whole-line
-            printf "\x1b[0m"
             zle .redisplay
     fi
 }

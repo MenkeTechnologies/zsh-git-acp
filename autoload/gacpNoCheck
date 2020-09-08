@@ -39,9 +39,9 @@ gacpNoCheck() {
 	if gacpCommitAndPush "$BUFFER";then
 		print -sr "$BUFFER"
 		zle .kill-whole-line
-		printf "\x1b[0m"
 		zle .redisplay
     fi
+    printf "\x1b[0m"
 
 }
 
