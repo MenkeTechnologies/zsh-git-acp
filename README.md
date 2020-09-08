@@ -135,6 +135,13 @@ alias gffa='git fetch -f --all --prune --tags'
 alias glu='git pull upstream'
 ```
 
+## Install for Zinit
+> `~/.zshrc`
+```sh
+source "$HOME/.zinit/bin/zinit.zsh"
+zinit ice lucid nocompile
+zinit load MenkeTechnologies/zsh-git-acp
+```
 
 ## Install for Oh My Zsh
 
