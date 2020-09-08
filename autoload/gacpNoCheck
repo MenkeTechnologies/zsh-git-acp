@@ -7,7 +7,7 @@ gacpNoCheck() {
     for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
             printf "\x1b[0;1;31m"
-            zle -R "BLACKLISTED: $(pwd -P)" && read -k 1
+            zle -R "Zsh-Git-ACP BLACKLISTED: $(pwd -P)" && read -k 1
             printf "\x1b[0m"
             return 1
         fi
@@ -15,21 +15,21 @@ gacpNoCheck() {
 
     if ! isGitDir; then
         printf "\x1b[0;1;31m"
-        zle -R "ERROR: $(pwd) is not a git dir." && read -k 1
+        zle -R "Zsh-Git-ACP ERROR: $(pwd) is not a git dir." && read -k 1
         printf "\x1b[0m"
         return 1
     fi
 
     print -r -- "$BUFFER" | grep -q -E '\S' || {
         printf "\x1b[0;1;31m"
-        zle -R "ERROR: No commit message." && read -k 1
+        zle -R "Zsh-Git-ACP ERROR: No commit message." && read -k 1
         printf "\x1b[0m"
         return 1
     }
 
 	git status | grep -q "nothing to commit" && {
         printf "\x1b[0;1;31m"
-        zle -R "ERROR: Nothing to commit." && read -k 1
+        zle -R "Zsh-Git-ACP ERROR: Nothing to commit." && read -k 1
         printf "\x1b[0m"
         return 1
 	}
