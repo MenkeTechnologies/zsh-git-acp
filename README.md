@@ -32,6 +32,8 @@ This is the gacpNoCheck widget bound to ^S (S was chosen as many apps bind this 
 The gacpCheckDiff widget does the same but only after a side by side diff piped into less and a confirmation prompt.
 This is bound to ^F^S.
 
+When the widgets run they will check to see if current directory is in blacklist and if so display an error.  To setup the blacklist `export GACP_BLACKLISTED_DIRECTORIES=(dir1 dir2)` etc.
+
 ```sh
 bindkey -M viins '^S' gacpNoCheck
 bindkey -M vicmd '^S' gacpNoCheck
