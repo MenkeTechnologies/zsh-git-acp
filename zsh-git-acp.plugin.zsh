@@ -7,6 +7,7 @@ autoload -Uz "${0:h}/autoload/"*(.:t)
 #{{{                    MARK:alias
 #**************************************************************
 alias glgf='git log --stat --format=fuller'
+alias gsa='git rev-list --all | xargs git grep -C 5'
 
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
