@@ -9,6 +9,8 @@ autoload -Uz "${0:h}/autoload/"*(.:t)
 alias glgf='git log --stat --format=fuller'
 alias gsa='git rev-list --all | xargs git grep -C 5'
 
+alias gcf='git checkout -f'
+
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
 alias glrf='git pull --rebase --force'
