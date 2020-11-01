@@ -9,7 +9,21 @@ autoload -Uz "${0:h}/autoload/"*(.:t)
 alias glgf='git log --stat --format=fuller'
 alias gsa='git rev-list --all | xargs git grep -C 5'
 
+alias gdom='git diff origin/master'
+alias gdod='git diff origin/dev'
+alias gdum='git diff upstream/master'
+alias gdud='git diff upstream/dev'
+
 alias gcof='git checkout -f'
+alias gcoom='git checkout origin/master'
+alias gcofom='git checkout -f origin/master'
+alias gcood='git checkout origin/dev'
+alias gcofod='git checkout -f origin/dev'
+
+alias gcoum='git checkout upstream/master'
+alias gcofum='git checkout -f upstream/master'
+alias gcoud='git checkout upstream/dev'
+alias gcofud='git checkout -f upstream/dev'
 
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
