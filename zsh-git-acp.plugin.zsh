@@ -9,6 +9,10 @@ autoload -Uz "${0:h}/autoload/"*(.:t)
 alias glgf='git log --stat --format=fuller'
 alias gsa='git rev-list --all | xargs git grep -C 5'
 
+alias gmc='git merge --continue'
+alias gme='git merge --edit'
+alias gmod='git merge origin/dev'
+
 alias gdom='git diff -w origin/master'
 alias gdod='git diff -w origin/dev'
 alias gdum='git diff -w upstream/master'
