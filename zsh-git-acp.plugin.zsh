@@ -19,9 +19,11 @@ alias gdum='git diff -w upstream/master'
 alias gdud='git diff -w upstream/dev'
 
 alias gcof='git checkout -f'
+alias gcom='git checkout master'
 alias gcoom='git checkout origin/master'
 alias gcofom='git checkout -f origin/master'
 alias gcood='git checkout origin/dev'
+alias gcod='git checkout dev'
 alias gcofod='git checkout -f origin/dev'
 
 alias gcoum='git checkout upstream/master'
@@ -71,6 +73,10 @@ alias gpom='git push origin master:master'
 alias gpum='git push upstream master:master'
 alias gpod='git push origin dev:dev'
 alias gpud='git push upstream dev:dev'
+
+alias gphm='git push heroku master:master'
+alias gpfhm='git push --force heroku master:master'
+alias gpfha='git push --force heroku --all'
 
 alias gpot='git push origin --tags'
 alias gpfot='git push --force origin --tags'
