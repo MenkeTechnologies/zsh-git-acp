@@ -6,6 +6,14 @@ autoload -Uz "${0:h}/autoload/"*(.:t)
 
 #{{{                    MARK:alias
 #**************************************************************
+alias gbuom='git branch -u origin/master'
+alias gbuod='git branch -u origin/dev'
+
+alias gbu='git branch -u'
+
+alias gbuum='git branch -u upstream/master'
+alias gbuud='git branch -u upstream/dev'
+
 alias glgf='git log --stat --format=fuller'
 alias gsa='git rev-list --all | xargs git grep -C 5'
 
