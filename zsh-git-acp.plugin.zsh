@@ -43,6 +43,10 @@ alias glu='git pull upstream'
 alias glr='git pull --rebase'
 alias glrf='git pull --rebase --force'
 
+alias glhm='git pull heroku master:master'
+alias glfhm='git pull -f heroku master:master'
+alias glrhm='git pull --rebase heroku master:master'
+
 alias glom='git pull origin master:master'
 alias glrom='git pull --rebase origin master:master'
 
