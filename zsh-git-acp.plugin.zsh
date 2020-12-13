@@ -4,164 +4,175 @@
 fpath+=("${0:h}/autoload")
 autoload -Uz "${0:h}/autoload/"*(.:t)
 
+
+if [[ -z "$ZPWR_DEV_BRANCH" ]]; then
+    ZPWR_DEV_BRANCH="dev"
+fi
+
 #{{{                    MARK:alias
 #**************************************************************
-alias gbuom='git branch -u origin/master'
-alias gbuod='git branch -u origin/dev'
+alias gbuom="git branch -u origin/master"
+alias gbuod="git branch -u origin/$ZPWR_DEV_BRANCH"
 
-alias gbu='git branch -u'
+alias gbu="git branch -u"
 
-alias gbuum='git branch -u upstream/master'
-alias gbuud='git branch -u upstream/dev'
+alias gbuum="git branch -u upstream/master"
+alias gbuud="git branch -u upstream/$ZPWR_DEV_BRANCH"
 
-alias glgf='git log --stat --format=fuller'
-alias gsa='git rev-list --all | xargs git grep -C 5'
+alias glgf="git log --stat --format=fuller"
+alias gsa="git rev-list --all | xargs git grep -C 5"
 
-alias gmc='git merge --continue'
-alias gme='git merge --edit'
-alias gmod='git merge origin/dev'
+alias gmc="git merge --continue"
+alias gme="git merge --edit"
+alias gmod="git merge origin/$ZPWR_DEV_BRANCH"
 
-alias gdom='git diff -w origin/master'
-alias gdod='git diff -w origin/dev'
-alias gdum='git diff -w upstream/master'
-alias gdud='git diff -w upstream/dev'
+alias gdom="git diff -w origin/master"
+alias gdod="git diff -w origin/$ZPWR_DEV_BRANCH"
+alias gdum="git diff -w upstream/master"
+alias gdud="git diff -w upstream/$ZPWR_DEV_BRANCH"
 
-alias gcof='git checkout -f'
-alias gcom='git checkout master'
-alias gcoom='git checkout origin/master'
-alias gcofom='git checkout -f origin/master'
-alias gcood='git checkout origin/dev'
-alias gcod='git checkout dev'
-alias gcofod='git checkout -f origin/dev'
+alias gcof="git checkout -f"
+alias gcom="git checkout master"
+alias gcoom="git checkout origin/master"
+alias gcofom="git checkout -f origin/master"
+alias gcood="git checkout origin/$ZPWR_DEV_BRANCH"
+alias gcod="git checkout $ZPWR_DEV_BRANCH"
+alias gcofod="git checkout -f origin/$ZPWR_DEV_BRANCH"
 
-alias gcoum='git checkout upstream/master'
-alias gcofum='git checkout -f upstream/master'
-alias gcoud='git checkout upstream/dev'
-alias gcofud='git checkout -f upstream/dev'
+alias gcoum="git checkout upstream/master"
+alias gcofum="git checkout -f upstream/master"
+alias gcoud="git checkout upstream/$ZPWR_DEV_BRANCH"
+alias gcofud="git checkout -f upstream/$ZPWR_DEV_BRANCH"
 
-alias glu='git pull upstream'
-alias glr='git pull --rebase'
-alias glrf='git pull --rebase --force'
+alias glu="git pull upstream"
+alias glr="git pull --rebase"
+alias glrf="git pull --rebase --force"
 
-alias glhm='git pull heroku master:master'
-alias glfhm='git pull -f heroku master:master'
-alias glrhm='git pull --rebase heroku master:master'
+alias glhm="git pull heroku master:master"
+alias glfhm="git pull -f heroku master:master"
+alias glrhm="git pull --rebase heroku master:master"
 
-alias glom='git pull origin master:master'
-alias glrom='git pull --rebase origin master:master'
+alias glom="git pull origin master:master"
+alias glrom="git pull --rebase origin master:master"
 
-alias glum='git pull upstream master:master'
-alias glrum='git pull --rebase upstream master:master'
+alias glum="git pull upstream master:master"
+alias glrum="git pull --rebase upstream master:master"
 
-alias glod='git pull origin dev:dev'
-alias glrod='git pull --rebase origin dev:dev'
+alias glod="git pull origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias glrod="git pull --rebase origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias glud='git pull upstream dev:dev'
-alias glrud='git pull --rebase upstream dev:dev'
+alias glud="git pull upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias glrud="git pull --rebase upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias glomd='git pull origin master:dev'
-alias gludm='git pull upstream dev:master'
+alias glomd="git pull origin master:$ZPWR_DEV_BRANCH"
+alias gludm="git pull upstream $ZPWR_DEV_BRANCH:master"
 
-alias glromd='git pull --rebase origin master:dev'
-alias glrudm='git pull --rebase upstream dev:master'
+alias glromd="git pull --rebase origin master:$ZPWR_DEV_BRANCH"
+alias glrudm="git pull --rebase upstream $ZPWR_DEV_BRANCH:master"
 
-alias glodm='git pull origin dev:master'
-alias glumd='git pull upstream master:dev'
+alias glodm="git pull origin $ZPWR_DEV_BRANCH:master"
+alias glumd="git pull upstream master:$ZPWR_DEV_BRANCH"
 
-alias glrodm='git pull --rebase origin dev:master'
-alias glrumd='git pull --rebase upstream master:dev'
+alias glrodm="git pull --rebase origin $ZPWR_DEV_BRANCH:master"
+alias glrumd="git pull --rebase upstream master:$ZPWR_DEV_BRANCH"
 
-alias grr='git remote remove'
-alias gre='git remote rename'
-alias grao='git remote add origin'
-alias grau='git remote add upstream'
+alias grr="git remote remove"
+alias gre="git remote rename"
+alias grao="git remote add origin"
+alias grau="git remote add upstream"
 
-alias gpa='git push --all'
-alias gpo='git push origin'
-alias gpoa='git push origin --all'
-alias gpfoa='git push --force origin --all'
-alias gpu='git push upstream'
-alias gpom='git push origin master:master'
-alias gpum='git push upstream master:master'
-alias gpod='git push origin dev:dev'
-alias gpud='git push upstream dev:dev'
+alias gpa="git push --all"
+alias gpo="git push origin"
+alias gpoa="git push origin --all"
+alias gpfoa="git push --force origin --all"
+alias gpu="git push upstream"
 
-alias gphm='git push heroku master:master'
-alias gpfhm='git push --force heroku master:master'
-alias gpfha='git push --force heroku --all'
+alias gpom="git push origin master:master"
+alias gpod="git push origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias gpomd="git push origin master:$ZPWR_DEV_BRANCH"
+alias gpodm="git push origin $ZPWR_DEV_BRANCH:master"
 
-alias gpot='git push origin --tags'
-alias gpfot='git push --force origin --tags'
-alias gput='git push upstream --tags'
-alias gpfut='git push --force upstream --tags'
+alias gpum="git push upstream master:master"
+alias gpud="git push upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias gpumd="git push upstream master:$ZPWR_DEV_BRANCH"
+alias gpudm="git push upstream $ZPWR_DEV_BRANCH:master"
 
-alias glfo='git pull --force origin'
-alias glrfo='git pull --rebase --force origin'
+alias gphm="git push heroku master:master"
+alias gpfhm="git push --force heroku master:master"
+alias gpfha="git push --force heroku --all"
 
-alias glfu='git pull --force upstream'
-alias glrfu='git pull --rebase --force upstream'
+alias gpot="git push origin --tags"
+alias gpfot="git push --force origin --tags"
+alias gput="git push upstream --tags"
+alias gpfut="git push --force upstream --tags"
 
-alias glfom='git pull --force origin master:master'
-alias glrfom='git pull --rebase --force origin master:master'
+alias glfo="git pull --force origin"
+alias glrfo="git pull --rebase --force origin"
 
-alias glfum='git pull --force upstream master:master'
-alias glrfum='git pull --rebase --force upstream master:master'
+alias glfu="git pull --force upstream"
+alias glrfu="git pull --rebase --force upstream"
 
-alias glfod='git pull --force origin dev:dev'
-alias glfud='git pull --force upstream dev:dev'
+alias glfom="git pull --force origin master:master"
+alias glrfom="git pull --rebase --force origin master:master"
 
-alias glrfod='git pull --rebase --force origin dev:dev'
-alias glrfud='git pull --rebase --force upstream dev:dev'
+alias glfum="git pull --force upstream master:master"
+alias glrfum="git pull --rebase --force upstream master:master"
 
-alias glfomd='git pull --force origin master:dev'
-alias glfudm='git pull --force upstream dev:master'
+alias glfod="git pull --force origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias glfud="git pull --force upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias glrfomd='git pull --rebase --force origin masterdev'
-alias glrfudm='git pull --rebase --force upstream dev:master'
+alias glrfod="git pull --rebase --force origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
+alias glrfud="git pull --rebase --force upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias glfodm='git pull --force origin dev:master'
-alias glfumd='git pull --force upstream masterdev'
+alias glfomd="git pull --force origin master:$ZPWR_DEV_BRANCH"
+alias glfudm="git pull --force upstream $ZPWR_DEV_BRANCH:master"
 
-alias glrfodm='git pull --rebase --force origin dev:master'
-alias glrfumd='git pull --rebase --force upstream masterdev'
+alias glrfomd="git pull --rebase --force origin master$ZPWR_DEV_BRANCH"
+alias glrfudm="git pull --rebase --force upstream $ZPWR_DEV_BRANCH:master"
 
-alias gpfo='git push --force origin'
-alias gpfu='git push --force upstream'
+alias glfodm="git pull --force origin $ZPWR_DEV_BRANCH:master"
+alias glfumd="git pull --force upstream master$ZPWR_DEV_BRANCH"
 
-alias gpfom='git push --force origin master:master'
-alias gpfod='git push --force origin dev:dev'
+alias glrfodm="git pull --rebase --force origin $ZPWR_DEV_BRANCH:master"
+alias glrfumd="git pull --rebase --force upstream master$ZPWR_DEV_BRANCH"
 
-alias gpfum='git push --force upstream master:master'
-alias gpfud='git push --force upstream dev:dev'
+alias gpfo="git push --force origin"
+alias gpfu="git push --force upstream"
 
-alias gpfomd='git push --force origin master:dev'
-alias gpfodm='git push --force origin dev:master'
+alias gpfom="git push --force origin master:master"
+alias gpfod="git push --force origin $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias gpfumd='git push --force upstream master:dev'
-alias gpfudm='git push --force upstream dev:master'
+alias gpfum="git push --force upstream master:master"
+alias gpfud="git push --force upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRANCH"
 
-alias gpuat='git push upstream --all && git push upstream --tags'
+alias gpfomd="git push --force origin master:$ZPWR_DEV_BRANCH"
+alias gpfodm="git push --force origin $ZPWR_DEV_BRANCH:master"
 
-alias gpfoat='git push -f origin --all && git push -f origin --tags'
-alias gpfuat='git push -f upstream --all && git push -f origin --tags'
+alias gpfumd="git push --force upstream master:$ZPWR_DEV_BRANCH"
+alias gpfudm="git push --force upstream $ZPWR_DEV_BRANCH:master"
 
-alias grom='git reset --hard origin/master'
-alias grum='git reset --hard upstream/master'
-alias grod='git reset --hard origin/dev'
-alias grud='git reset --hard upstream/dev'
-alias gfo='git fetch origin'
-alias gfu='git fetch upstream'
-alias gfod='git fetch origin dev'
-alias gfud='git fetch upstream dev'
-alias gfom='git fetch origin master'
-alias gfum='git fetch upstream master'
-alias gffo='git fetch --force origin'
-alias gffu='git fetch --force upstream'
-alias gffod='git fetch --force origin dev'
-alias gffud='git fetch --force upstream dev'
-alias gffom='git fetch --force origin master'
-alias gffum='git fetch --force upstream master'
-alias gj='git pull --rebase --autostash -v'
+alias gpuat="git push upstream --all && git push upstream --tags"
+
+alias gpfoat="git push -f origin --all && git push -f origin --tags"
+alias gpfuat="git push -f upstream --all && git push -f origin --tags"
+
+alias grom="git reset --hard origin/master"
+alias grum="git reset --hard upstream/master"
+alias grod="git reset --hard origin/$ZPWR_DEV_BRANCH"
+alias grud="git reset --hard upstream/$ZPWR_DEV_BRANCH"
+alias gfo="git fetch origin"
+alias gfu="git fetch upstream"
+alias gfod="git fetch origin $ZPWR_DEV_BRANCH"
+alias gfud="git fetch upstream $ZPWR_DEV_BRANCH"
+alias gfom="git fetch origin master"
+alias gfum="git fetch upstream master"
+alias gffo="git fetch --force origin"
+alias gffu="git fetch --force upstream"
+alias gffod="git fetch --force origin $ZPWR_DEV_BRANCH"
+alias gffud="git fetch --force upstream $ZPWR_DEV_BRANCH"
+alias gffom="git fetch --force origin master"
+alias gffum="git fetch --force upstream master"
+alias gj="git pull --rebase --autostash -v"
 alias gs="git difftool -y -x 'printf \"\\x1b[1;4m\$REMOTE\\x1b[0m\\x0a\";sdiff --expand-tabs -w '\$COLUMNS "
 alias grhs='git reset --soft'
 alias grhm='git reset --mixed'
