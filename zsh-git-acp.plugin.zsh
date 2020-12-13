@@ -127,14 +127,14 @@ alias glrfud="git pull --rebase --force upstream $ZPWR_DEV_BRANCH:$ZPWR_DEV_BRAN
 alias glfomd="git pull --force origin master:$ZPWR_DEV_BRANCH"
 alias glfudm="git pull --force upstream $ZPWR_DEV_BRANCH:master"
 
-alias glrfomd="git pull --rebase --force origin master$ZPWR_DEV_BRANCH"
+alias glrfomd="git pull --rebase --force origin master:$ZPWR_DEV_BRANCH"
 alias glrfudm="git pull --rebase --force upstream $ZPWR_DEV_BRANCH:master"
 
 alias glfodm="git pull --force origin $ZPWR_DEV_BRANCH:master"
-alias glfumd="git pull --force upstream master$ZPWR_DEV_BRANCH"
+alias glfumd="git pull --force upstream master:$ZPWR_DEV_BRANCH"
 
 alias glrfodm="git pull --rebase --force origin $ZPWR_DEV_BRANCH:master"
-alias glrfumd="git pull --rebase --force upstream master$ZPWR_DEV_BRANCH"
+alias glrfumd="git pull --rebase --force upstream master:$ZPWR_DEV_BRANCH"
 
 alias gpfo="git push --force origin"
 alias gpfu="git push --force upstream"
