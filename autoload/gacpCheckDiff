@@ -4,7 +4,7 @@ gacpCheckDiff() {
     local currentDir dir __old
 
     currentDir="$(pwd -P)"
-    for dir in "${GACP_BLACKLISTED_DIRECTORIES[@]}" ; do
+    for dir in "${ZSH_GACP_BLACKLISTED_DIRECTORIES[@]}" ; do
         if [[ "$currentDir" == "$dir" ]]; then
             printf "\x1b[0;1;31m"
             zle -R "Zsh-Git-ACP BLACKLISTED: $(pwd -P)" && read -k 1

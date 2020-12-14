@@ -19,7 +19,7 @@ gacpCommitAndPush(){
 
     remotes=$(git remote)
     currentDir="$(pwd -P)"
-    for dir in "${BLACKLISTED_DIRECTORIES[@]}" ; do
+    for dir in "${ZSH_GACP_BLACKLISTED_DIRECTORIES[@]}" ; do
        if [[ "$currentDir" == "$dir" ]]; then
            return 1
        fi
