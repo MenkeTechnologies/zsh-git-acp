@@ -1,0 +1,11 @@
+gacpCommitAndPush(){
+
+    if ! isGitDir; then
+        loggNotGit
+        return 1
+    fi
+
+    git rev-list HEAD | wc -l
+}
+
+gacpCommitAndPush "$@"
