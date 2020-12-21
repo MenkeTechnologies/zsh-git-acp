@@ -3,17 +3,17 @@ gacpCommitAndPush(){
     local dir remotes currentDir
 
     if [[ -z "$1" ]]; then
-        loggErr "No commit message"
+        zpwrLoggErr "No commit message"
         return 1
     fi
 
-    if ! isGitDir; then
-        loggNotGit
+    if ! zpwrIsGitDir; then
+        zpwrLoggNotGit
         return 1
     fi
 
 	git status | grep -q "nothing to commit" && {
-        loggErr "Nothing to commit"
+        zpwrLoggErr "Nothing to commit"
         return 1
 	}
 

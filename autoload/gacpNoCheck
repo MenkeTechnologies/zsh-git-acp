@@ -13,7 +13,7 @@ gacpNoCheck() {
         fi
     done
 
-    if ! isGitDir; then
+    if ! zpwrIsGitDir; then
         printf "\x1b[0;1;31m"
         zle -R "Zsh-Git-ACP ERROR: $(pwd) is not a git dir." && read -k 1
         printf "\x1b[0m"

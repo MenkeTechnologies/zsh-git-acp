@@ -1,7 +1,7 @@
 gacpCommitAndPush(){
 
-    if ! isGitDir; then
-        loggNotGit
+    if ! zpwrIsGitDir; then
+        zpwrLoggNotGit
         return 1
     fi
 

@@ -211,29 +211,29 @@ alias gffa='git fetch -f --all --prune --tags'
 
 #{{{                    MARK:git fn
 #**************************************************************
-(( $+functions[exists] )) ||
-exists(){
+(( $+functions[zpwrExists] )) ||
+zpwrExists(){
     #alternative is command -v
     type "$1" >/dev/null 2>&1
 }
 
-(( $+functions[isGitDir] )) ||
-isGitDir(){
+(( $+functions[zpwrIsGitDir] )) ||
+zpwrIsGitDir(){
     command git rev-parse --git-dir 2> /dev/null 1>&2
 }
 
-(( $+functions[loggErr] )) ||
-loggErr(){
-    test -z "$1" && loggErr "need arg" >&2 && return 1
+(( $+functions[zpwrLoggErr] )) ||
+zpwrLoggErr(){
+    test -z "$1" && zpwrLoggErr "need arg" >&2 && return 1
     {
         printf "ERROR: $@"
     } >&2
 }
 
-(( $+functions[loggNotGit] )) ||
-loggNotGit() {
+(( $+functions[zpwrLoggNotGit] )) ||
+zpwrLoggNotGit() {
 
-    loggErr "$(pwd) is not a git dir"
+    zpwrLoggErr "$(pwd) is not a git dir"
 }
 
 #}}}***********************************************************

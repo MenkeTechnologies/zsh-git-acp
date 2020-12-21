@@ -13,7 +13,7 @@ gacpCheckDiff() {
         fi
     done
 
-    if ! isGitDir; then
+    if ! zpwrIsGitDir; then
         printf "\x1b[0;1;31m"
         zle -R "Zsh-Git-ACP ERROR: $(pwd) is not a git dir." && read -k 1
         printf "\x1b[0m"
@@ -39,7 +39,7 @@ gacpCheckDiff() {
      __old="$LESS"
     unset LESS
 
-    if exists gitSdiffColorizer.pl;then
+    if zpwrExists gitSdiffColorizer.pl;then
         gitSdiffColorizer.pl | less -R
     else
         git difftool -y -x HEAD * | less -R
