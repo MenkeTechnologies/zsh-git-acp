@@ -243,6 +243,8 @@ zpwrLoggNotGit() {
 zle -N gacpCheckDiff
 zle -N gacpNoCheck
 
+setopt noflowcontrol
+
 bindkey -M viins '^S' gacpNoCheck
 bindkey -M vicmd '^S' gacpNoCheck
 bindkey -M viins '^F^S' gacpCheckDiff

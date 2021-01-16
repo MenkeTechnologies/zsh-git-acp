@@ -31,6 +31,7 @@ If there is no remote the pull and push steps will be omitted.
 This is the gacpNoCheck widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
 The gacpCheckDiff widget does the same but only after a side by side diff piped into less and a confirmation prompt.
 This is bound to ^F^S.
+For ^S to work without activating terminal driver, `setopt noflowcontrol` is run by plugin which means ^S and ^Q are available to be used with ZLE.
 
 When the widgets run they will check to see if current directory is in blacklist and if so display an error.  To setup the blacklist `export ZSH_GACP_BLACKLISTED_DIRECTORIES=(dir1 dir2)` etc.
 
