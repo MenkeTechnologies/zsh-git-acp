@@ -9,12 +9,25 @@ if [[ -z "$ZPWR_DEV_BRANCH" ]]; then
     ZPWR_DEV_BRANCH="dev"
 fi
 
+function git_dev_branch() {
+  command git rev-parse --git-dir &>/dev/null || return
+  local branch
+  for branch in development develop devel dev; do
+    if command git show-ref -q --verify refs/heads/$branch; then
+      echo $branch
+      return
+    fi
+  done
+  echo dev
+}
+
 #{{{                    MARK:alias
 #**************************************************************
 alias gbuom="git branch -u origin/master"
 alias gbuod="git branch -u origin/$ZPWR_DEV_BRANCH"
 
 alias gbu="git branch -u"
+alias gcd='git checkout $(git_dev_branch)'
 
 alias gbuum="git branch -u upstream/master"
 alias gbuud="git branch -u upstream/$ZPWR_DEV_BRANCH"
