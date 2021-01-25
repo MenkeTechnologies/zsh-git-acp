@@ -1,4 +1,8 @@
-gacpCheckDiff() {
+# -*- mode: sh -*-
+# vim: set ft=sh:
+
+zsh-gacp-CheckDiff() {
+
     emulate -LR zsh
 
     local currentDir dir __old
@@ -58,7 +62,7 @@ gacpCheckDiff() {
     if [[ "$REPLY" == 'y' ]]; then
         # blue foreground color git info
         printf "\x1b[0;34m"
-        gacpCommitAndPush "$BUFFER" && {
+        zsh-gacp-CommitAndPush "$BUFFER" && {
             print -sr "$BUFFER"
             zle .kill-whole-line
             printf "\x1b[0m"
@@ -73,4 +77,4 @@ gacpCheckDiff() {
     fi
 }
 
-gacpCheckDiff "$@"
+zsh-gacp-CheckDiff "$@"

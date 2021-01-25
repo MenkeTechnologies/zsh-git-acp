@@ -28,18 +28,18 @@ source zsh-git-acp.plugin.zsh from .zshrc
 ## Keybindings
 The zle keybindings both take the current BUFFER as the commit message and then run git pull, add, commit and push hence the name git-acp.
 If there is no remote the pull and push steps will be omitted.
-This is the gacpNoCheck widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
-The gacpCheckDiff widget does the same but only after a side by side diff piped into less and a confirmation prompt.
+This is the zsh-gacp-NoCheck widget bound to ^S (S was chosen as many apps bind this to save from menus).  There is no confirmation before the add, commit and push.
+The zsh-gacp-CheckDiff widget does the same but only after a side by side diff piped into less and a confirmation prompt.
 This is bound to ^F^S.
 For ^S to work without activating terminal driver, `setopt noflowcontrol` is run by plugin which means ^S and ^Q are available to be used with ZLE.
 
 When the widgets run they will check to see if current directory is in blacklist and if so display an error.  To setup the blacklist `export ZSH_GACP_BLACKLISTED_DIRECTORIES=(dir1 dir2)` etc.
 
 ```sh
-bindkey -M viins '^S' gacpNoCheck
-bindkey -M vicmd '^S' gacpNoCheck
-bindkey -M viins '^F^S' gacpCheckDiff
-bindkey -M vicmd '^F^S' gacpCheckDiff
+bindkey -M viins '^S' zsh-gacp-NoCheck
+bindkey -M vicmd '^S' zsh-gacp-NoCheck
+bindkey -M viins '^F^S' zsh-gacp-CheckDiff
+bindkey -M vicmd '^F^S' zsh-gacp-CheckDiff
 ```
 
 ## 115+ git aliases

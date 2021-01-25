@@ -1,4 +1,7 @@
-gacpCommitAndPush(){
+# -*- mode: sh -*-
+# vim: set ft=sh:
+
+zsh-gacp-CommitAndPush(){
 
     local dir remotes currentDir
 
@@ -39,4 +42,4 @@ gacpCommitAndPush(){
     fi
 }
 
-gacpCommitAndPush "$@"
+zsh-gacp-CommitAndPush "$@"
