@@ -251,7 +251,10 @@ setopt noflowcontrol
 
 bindkey -M viins '^S' zsh-gacp-NoCheck
 bindkey -M vicmd '^S' zsh-gacp-NoCheck
+bindkey -M emacs '^S' zsh-gacp-NoCheck
+
 bindkey -M viins '^F^S' zsh-gacp-CheckDiff
 bindkey -M vicmd '^F^S' zsh-gacp-CheckDiff
+bindkey -M emacs '^F^S' zsh-gacp-CheckDiff
 #}}}***********************************************************
 
