@@ -7,7 +7,7 @@ function zsh-gacp-mainBranch() {
 
     local branch
 
-    for branch in master mainBranch; do
+    for branch in master main; do
         if command git show-ref -q --verify refs/heads/$branch; then
             echo "$branch"
             return
