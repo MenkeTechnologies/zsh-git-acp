@@ -42,94 +42,174 @@ bindkey -M viins '^F^S' zsh-gacp-CheckDiff
 bindkey -M vicmd '^F^S' zsh-gacp-CheckDiff
 ```
 
-## 115+ git aliases
-
+## 150+ git aliases
 ```sh
+alias gbuom='git branch -u origin/$(zsh-gacp-mainBranch)'
+alias gbuod='git branch -u origin/$(zsh-gacp-devBranch)'
+alias gu='git rm --cached -r'
+
+alias gbu='git branch -u'
+alias gcd='git checkout $(zsh-gacp-devBranch)'
+
+alias gbuum='git branch -u upstream/$(zsh-gacp-mainBranch)'
+alias gbuud='git branch -u upstream/$(zsh-gacp-devBranch)'
+
+alias glgf='git log --stat --format=fuller'
+alias gsa='git rev-list --all | xargs git grep -C 5'
+
+alias gmc='git merge --continue'
+alias gme='git merge --edit'
+alias gmod='git merge origin/$(zsh-gacp-devBranch)'
+
+alias gdom='git diff -w origin/$(zsh-gacp-mainBranch)'
+alias gdod='git diff -w origin/$(zsh-gacp-devBranch)'
+alias gdum='git diff -w upstream/$(zsh-gacp-mainBranch)'
+alias gdud='git diff -w upstream/$(zsh-gacp-devBranch)'
+
+alias gcm='git checkout $(zsh-gacp-mainBranch)'
+alias gcd='git checkout $(zsh-gacp-devBranch)'
+
+alias gcof='git checkout -f'
+alias gcom='git checkout $(zsh-gacp-mainBranch)'
+alias gcoom='git checkout origin/$(zsh-gacp-mainBranch)'
+alias gcofom='git checkout -f origin/$(zsh-gacp-mainBranch)'
+alias gcood='git checkout origin/$(zsh-gacp-devBranch)'
+alias gcod='git checkout $(zsh-gacp-devBranch)'
+alias gcofod='git checkout -f origin/$(zsh-gacp-devBranch)'
+
+alias gcoum='git checkout upstream/$(zsh-gacp-mainBranch)'
+alias gcofum='git checkout -f upstream/$(zsh-gacp-mainBranch)'
+alias gcoud='git checkout upstream/$(zsh-gacp-devBranch)'
+alias gcofud='git checkout -f upstream/$(zsh-gacp-devBranch)'
+
 alias glu='git pull upstream'
 alias glr='git pull --rebase'
 alias glrf='git pull --rebase --force'
-alias glom='git pull origin master:master'
-alias glrom='git pull --rebase origin master:master'
-alias glum='git pull upstream master:master'
-alias glrum='git pull --rebase upstream master:master'
-alias glod='git pull origin dev:dev'
-alias glrod='git pull --rebase origin dev:dev'
-alias glud='git pull upstream dev:dev'
-alias glrud='git pull --rebase upstream dev:dev'
-alias glomd='git pull origin master:dev'
-alias gludm='git pull upstream dev:master'
-alias glromd='git pull --rebase origin master:dev'
-alias glrudm='git pull --rebase upstream dev:master'
-alias glodm='git pull origin dev:master'
-alias glumd='git pull upstream master:dev'
-alias glrodm='git pull --rebase origin dev:master'
-alias glrumd='git pull --rebase upstream master:dev'
+
+alias glhm='_m=$(zsh-gacp-mainBranch); git pull heroku $_m:$_m; unset _m'
+alias glfhm='_m=$(zsh-gacp-mainBranch); git pull -f heroku $_m:$_m; unset _m'
+alias glrhm='_m=$(zsh-gacp-mainBranch); git pull --rebase heroku $_m:$_m; unset _m'
+
+alias glom='_m=$(zsh-gacp-mainBranch); git pull origin $_m:$_m; unset _m'
+alias glrom='_m=$(zsh-gacp-mainBranch); git pull --rebase origin $_m:$_m; unset _m'
+
+alias glum='_m=$(zsh-gacp-mainBranch); git pull upstream $_m:$_m; unset _m'
+alias glrum='_m=$(zsh-gacp-mainBranch); git pull --rebase upstream $_m:$_m; unset _m'
+
+alias glod='_d=$(zsh-gacp-devBranch); git pull origin $_d:$_d; unset _d'
+alias glrod='_d=$(zsh-gacp-devBranch); git pull --rebase origin $_d:$_d; unset _d'
+
+alias glud='_d=$(zsh-gacp-devBranch); git pull upstream $_d:$_d; unset _d'
+alias glrud='_d=$(zsh-gacp-devBranch); git pull --rebase upstream $_d:$_d; unset _d'
+
+alias glomd='git pull origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias gludm='git pull upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias glromd='git pull --rebase origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias glrudm='git pull --rebase upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias glodm='git pull origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+alias glumd='git pull upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+
+alias glrodm='git pull --rebase origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+alias glrumd='git pull --rebase upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+
 alias grr='git remote remove'
 alias gre='git remote rename'
 alias grao='git remote add origin'
 alias grau='git remote add upstream'
+
 alias gpa='git push --all'
 alias gpo='git push origin'
 alias gpoa='git push origin --all'
 alias gpfoa='git push --force origin --all'
 alias gpu='git push upstream'
-alias gpom='git push origin master:master'
-alias gpum='git push upstream master:master'
-alias gpod='git push origin dev:dev'
-alias gpud='git push upstream dev:dev'
+
+alias gpom='_m=$(zsh-gacp-mainBranch); git push origin $_m:$_m; unset _m'
+alias gpod='_d=$(zsh-gacp-devBranch); git push origin $_d:$_d; unset _d'
+alias gpomd='git push origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias gpodm='git push origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias gpum='_m=$(zsh-gacp-mainBranch); git push upstream $_m:$_m; unset _m'
+alias gpud='_d=$(zsh-gacp-devBranch); git push upstream $_d:$_d; unset _d'
+alias gpumd='git push upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias gpudm='git push upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias gphm='_m=$(zsh-gacp-mainBranch); git push heroku $_m:$_m; unset _m'
+alias gpfhm='_m=$(zsh-gacp-mainBranch); git push --force heroku $_m:$_m; unset _m'
+alias gpfha='git push --force heroku --all'
+
 alias gpot='git push origin --tags'
 alias gpfot='git push --force origin --tags'
 alias gput='git push upstream --tags'
 alias gpfut='git push --force upstream --tags'
+
 alias glfo='git pull --force origin'
 alias glrfo='git pull --rebase --force origin'
+
 alias glfu='git pull --force upstream'
 alias glrfu='git pull --rebase --force upstream'
-alias glfom='git pull --force origin master:master'
-alias glrfom='git pull --rebase --force origin master:master'
-alias glfum='git pull --force upstream master:master'
-alias glrfum='git pull --rebase --force upstream master:master'
-alias glfod='git pull --force origin dev:dev'
-alias glfud='git pull --force upstream dev:dev'
-alias glrfod='git pull --rebase --force origin dev:dev'
-alias glrfud='git pull --rebase --force upstream dev:dev'
-alias glfomd='git pull --force origin master:dev'
-alias glfudm='git pull --force upstream dev:master'
-alias glrfomd='git pull --rebase --force origin masterdev'
-alias glrfudm='git pull --rebase --force upstream dev:master'
-alias glfodm='git pull --force origin dev:master'
-alias glfumd='git pull --force upstream masterdev'
-alias glrfodm='git pull --rebase --force origin dev:master'
-alias glrfumd='git pull --rebase --force upstream masterdev'
+
+alias glfom='_m=$(zsh-gacp-mainBranch); git pull --force origin $_m:$_m; unset _m'
+alias glrfom='_m=$(zsh-gacp-mainBranch); git pull --rebase --force origin $_m:$_m; unset _m'
+
+alias glfum='_m=$(zsh-gacp-mainBranch); git pull --force upstream $_m:$_m; unset _m'
+alias glrfum='_m=$(zsh-gacp-mainBranch); git pull --rebase --force upstream $_m:$_m; unset _m'
+
+alias glfod='_d=$(zsh-gacp-devBranch); git pull --force origin $_d:$_d; unset _d'
+alias glfud='_d=$(zsh-gacp-devBranch); git pull --force upstream $_d:$_d; unset _d'
+
+alias glrfod='_d=$(zsh-gacp-devBranch); git pull --rebase --force origin $_d:$_d; unset _d'
+alias glrfud='_d=$(zsh-gacp-devBranch); git pull --rebase --force upstream $_d:$_d; unset _d'
+
+alias glfomd='git pull --force origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias glfudm='git pull --force upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias glrfomd='git pull --rebase --force origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias glrfudm='git pull --rebase --force upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias glfodm='git pull --force origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+alias glfumd='git pull --force upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+
+alias glrfodm='git pull --rebase --force origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+alias glrfumd='git pull --rebase --force upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+
 alias gpfo='git push --force origin'
 alias gpfu='git push --force upstream'
-alias gpfom='git push --force origin master:master'
-alias gpfod='git push --force origin dev:dev'
-alias gpfum='git push --force upstream master:master'
-alias gpfud='git push --force upstream dev:dev'
-alias gpfomd='git push --force origin master:dev'
-alias gpfodm='git push --force origin dev:master'
-alias gpfumd='git push --force upstream master:dev'
-alias gpfudm='git push --force upstream dev:master'
+
+alias gpfom='_m=$(zsh-gacp-mainBranch); git push --force origin $_m:$_m; unset _m'
+alias gpfod='_d=$(zsh-gacp-devBranch); git push --force origin $_d:$_d; unset _d'
+
+alias gpfum='_m=$(zsh-gacp-mainBranch); git push --force upstream $_m:$_m; unset _m'
+alias gpfud='_d=$(zsh-gacp-devBranch); git push --force upstream $_d:$_d; unset _d'
+
+alias gpfomd='git push --force origin $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias gpfodm='git push --force origin $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
+alias gpfumd='git push --force upstream $(zsh-gacp-mainBranch):$(zsh-gacp-devBranch)'
+alias gpfudm='git push --force upstream $(zsh-gacp-devBranch):$(zsh-gacp-mainBranch)'
+
 alias gpuat='git push upstream --all && git push upstream --tags'
+
 alias gpfoat='git push -f origin --all && git push -f origin --tags'
 alias gpfuat='git push -f upstream --all && git push -f origin --tags'
-alias grom='git reset --hard origin/master'
-alias grum='git reset --hard upstream/master'
-alias grod='git reset --hard origin/dev'
-alias grud='git reset --hard upstream/dev'
+
+alias grom='git reset --hard origin/$(zsh-gacp-mainBranch)'
+alias grum='git reset --hard upstream/$(zsh-gacp-mainBranch)'
+alias grod='git reset --hard origin/$(zsh-gacp-devBranch)'
+alias grud='git reset --hard upstream/$(zsh-gacp-devBranch)'
 alias gfo='git fetch origin'
 alias gfu='git fetch upstream'
-alias gfod='git fetch origin dev'
-alias gfud='git fetch upstream dev'
-alias gfom='git fetch origin master'
-alias gfum='git fetch upstream master'
+alias gfod='git fetch origin $(zsh-gacp-devBranch)'
+alias gfud='git fetch upstream $(zsh-gacp-devBranch)'
+alias gfom='git fetch origin $(zsh-gacp-mainBranch)'
+alias gfum='git fetch upstream $(zsh-gacp-mainBranch)'
 alias gffo='git fetch --force origin'
 alias gffu='git fetch --force upstream'
-alias gffod='git fetch --force origin dev'
-alias gffud='git fetch --force upstream dev'
-alias gffom='git fetch --force origin master'
-alias gffum='git fetch --force upstream master'
+alias gffod='git fetch --force origin $(zsh-gacp-devBranch)'
+alias gffud='git fetch --force upstream $(zsh-gacp-devBranch)'
+alias gffom='git fetch --force origin $(zsh-gacp-mainBranch)'
+alias gffum='git fetch --force upstream $(zsh-gacp-mainBranch)'
 alias gj='git pull --rebase --autostash -v'
 alias gs="git difftool -y -x 'printf \"\\x1b[1;4m\$REMOTE\\x1b[0m\\x0a\";sdiff --expand-tabs -w '\$COLUMNS "
 alias grhs='git reset --soft'
@@ -142,9 +222,13 @@ alias glf='git pull --force'
 alias gla='git pull --all'
 alias glat='git pull --all --tags'
 alias glt='git pull --tags'
+
 alias glot='git pull origin --tags'
+alias glfot='git pull --force origin --tags'
+
 alias glut='git pull upstream --tags'
 alias glfut='git pull --force upstream --tags'
+
 alias glfa='git pull --force --all'
 alias glfat='git pull --force --all --tags'
 alias glft='git pull --force --tags'
@@ -152,13 +236,13 @@ alias gld='git log --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %
 alias glaa='git log --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --stat -p --all'
 alias glz='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --stat -p'
 alias glzz='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --stat -p --all'
-alias gacp='git add . && git commit -m "" && git push'
-alias gac='git add . && git commit -m ""'
+alias gacp="git add . && git commit -m '' && git push"
+alias gac="git add . && git commit -m ''"
 alias gbv='git branch -a -vv'
 alias allRebase='git rebase -i $(git rev-list --max-parents=0 HEAD)'
+
 alias gt='git tag'
 alias gfa='git fetch --all --prune --tags'
 alias gffa='git fetch -f --all --prune --tags'
-alias glu='git pull upstream'
 ```
 
