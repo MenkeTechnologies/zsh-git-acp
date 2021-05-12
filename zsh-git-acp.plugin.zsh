@@ -12,6 +12,8 @@ ZPWR_MAIN_BRANCH="master"
 alias gbuom='git branch -u origin/$(zsh-gacp-mainBranch)'
 alias gbuod='git branch -u origin/$(zsh-gacp-devBranch)'
 alias gu='git rm --cached -r'
+alias gaf='git add --force'
+alias gpfsup='git push --force --set-upstream origin $(git symbolic-ref --short HEAD)'
 
 alias gbu='git branch -u'
 alias gcd='git checkout $(zsh-gacp-devBranch)'
