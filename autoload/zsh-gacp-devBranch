@@ -5,10 +5,16 @@ function zsh-gacp-devBranch() {
 
     command git rev-parse --git-dir &>/dev/null || return 1
 
-    local branch
+    local branch remote
+
+    if [[ -z "$1" ]]; then
+        remote=origin
+    else
+        remote="$1"
+    fi
 
     for branch in development develop devel; do
-        if command git show-ref -q --verify refs/heads/$branch; then
+        if command git show-ref -q --verify refs/remotes/$remote/$branch; then
             echo "$branch"
             return
         fi
