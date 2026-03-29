@@ -1,4 +1,6 @@
 # zsh-git-acp
+[![CI](https://github.com/MenkeTechnologies/zsh-git-acp/actions/workflows/ci.yml/badge.svg)](https://github.com/MenkeTechnologies/zsh-git-acp/actions/workflows/ci.yml)
+
 This plugin adds various git aliases and two ZLE keybindings.
 
 ## Install for Zinit
