@@ -28,7 +28,7 @@ This plugin adds various git aliases and two ZLE keybindings.
 - [\[0x01\] Install for Oh My Zsh](#0x01-install-for-oh-my-zsh)
 - [\[0x02\] General Install](#0x02-general-install)
 - [\[0x03\] Keybindings](#0x03-keybindings)
-- [\[0x04\] 150+ git aliases](#0x04-150-git-aliases)
+- [\[0x04\] 159 git aliases](#0x04-159-git-aliases)
 
 ---
 
@@ -73,7 +73,7 @@ bindkey -M viins '^F^S' zsh-gacp-CheckDiff
 bindkey -M vicmd '^F^S' zsh-gacp-CheckDiff
 ```
 
-## [0x04] 150+ git aliases
+## [0x04] 159 git aliases
 ```sh
 alias gbuom='git branch -u origin/$(zsh-gacp-mainBranch)'
 alias gbuod='git branch -u origin/$(zsh-gacp-devBranch)'
