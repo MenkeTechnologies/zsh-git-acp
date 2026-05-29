@@ -31,7 +31,7 @@ zsh-gacp-CommitAndPush(){
     echo
 
     if [[ -n $remotes ]]; then
-        git pull --no-rebase
+        git pull --rebase
     fi
 
     git add .
