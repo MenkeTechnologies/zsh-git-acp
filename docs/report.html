@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="zsh-git-acp — Engineering report. git add + commit + push as a single ZLE widget. 510 zsh lines across plugin entry + 6 autoload functions, 159 git aliases, 2 ZLE widgets (zsh-gacp-NoCheck, zsh-gacp-CheckDiff) bound to Ctrl-S and Ctrl-F Ctrl-S across viins/vicmd/emacs keymaps, 35 zunit @test blocks across 6 t-*.zsh files, blacklist guard, current-buffer-as-commit-message, setopt noflowcontrol unlock.">
+  <title>zsh-git-acp &mdash; Engineering Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="hud-static.css">
+  <link rel="stylesheet" href="tutorial.css">
+  <style>
+    .tutorial-main { max-width: 72rem; }
+    .stat-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:0.7rem;margin:1rem 0; }
+    .stat-card { border:1px solid var(--border);border-top:3px solid var(--cyan);background:var(--bg-card);padding:0.85rem 1rem;border-radius:2px;text-align:center; }
+    .stat-card .stat-val { font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;color:var(--cyan);line-height:1.1;text-shadow:0 0 18px var(--cyan-glow); }
+    .stat-card .stat-val.accent { color:var(--accent);text-shadow:0 0 18px var(--accent-glow); }
+    .stat-card .stat-val.green  { color:var(--green);text-shadow:0 0 18px rgba(57,255,20,.3); }
+    .stat-card .stat-label { font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-muted);margin-top:0.45rem; }
+    .file-table { width:100%;border-collapse:collapse;margin:0.6rem 0;font-size:12px; }
+    .file-table th { background:var(--bg-secondary);color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-align:left;padding:7px 10px;border:1px solid var(--border); }
+    .file-table td { padding:6px 10px;border:1px solid var(--border);color:var(--text-dim);vertical-align:middle; }
+    .file-table tr:hover td { background:var(--bg-hover); }
+    .file-table td:first-child { font-family:'Share Tech Mono',monospace;color:var(--accent-light);font-weight:600;white-space:nowrap; }
+    .file-table .num { text-align:right;font-family:'Share Tech Mono',monospace; }
+    .file-table .total-row td { background:var(--bg-secondary);font-weight:700;color:var(--text);border-top:2px solid var(--cyan); }
+    .file-table code { font-size:11px;color:var(--accent-light);background:var(--bg-primary);padding:1px 4px;border-radius:2px; }
+    .feature-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(20rem,1fr));gap:0.65rem;margin:0.8rem 0; }
+    .feature-card { border:1px solid var(--border);border-left:3px solid var(--cyan);background:var(--bg-card);padding:0.7rem 1rem;border-radius:2px; }
+    .feature-card h4 { font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin:0 0 0.3rem; }
+    .feature-card p { margin:0;font-size:11px;color:var(--text-dim);line-height:1.55; }
+    .feature-card code { font-size:10.5px;color:var(--accent-light);background:var(--bg-primary);padding:1px 4px;border-radius:2px; }
+    .section-rule { border:none;border-top:1px dashed var(--border);margin:1.8rem 0; }
+  </style>
+</head>
+<body>
+  <div class="app tutorial-app" id="reportApp">
+    <div class="crt-scanline" id="crtH" aria-hidden="true"></div>
+    <div class="crt-scanline-v" id="crtV" aria-hidden="true"></div>
+
+    <header class="tutorial-header">
+      <div class="tutorial-header-inner">
+        <div>
+          <h1 class="tutorial-brand">// ZSH-GIT-ACP &mdash; ENGINEERING REPORT</h1>
+          <nav class="tutorial-crumbs" aria-label="Breadcrumb">
+            <span class="current">Engineering Report</span>
+            <span class="sep">/</span>
+            <a href="index.html">Docs</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/zsh-git-acp" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/zpwr" target="_blank" rel="noopener noreferrer">zpwr</a>
+            <span class="sep">/</span>
+            <a href="https://github.com/MenkeTechnologies/MenkeTechnologiesMeta" target="_blank" rel="noopener noreferrer">Meta</a>
+          </nav>
+          <p style="margin:0.35rem 0 0;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.03em;opacity:0.75;">
+            git add + commit + push as a single ZLE widget &middot; <kbd>Ctrl-S</kbd> no-check &middot; <kbd>Ctrl-F Ctrl-S</kbd> diff-confirm &middot; 159 git aliases &middot; <code>setopt noflowcontrol</code> to unlock <kbd>Ctrl-S</kbd>
+          </p>
+        </div>
+        <div class="tutorial-toolbar">
+          <button type="button" class="btn btn-secondary" id="btnTheme" title="Toggle light/dark">Theme</button>
+          <button type="button" class="btn btn-secondary active" id="btnCrt" title="CRT scanline overlay">CRT</button>
+          <button type="button" class="btn btn-secondary active" id="btnNeon" title="Neon border pulse">Neon</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="tutorial-main">
+
+      <h2 class="tutorial-title"><span class="step-hash">&gt;_</span>EXECUTIVE SUMMARY</h2>
+      <p class="tutorial-subtitle">
+        <strong>zsh-git-acp</strong> compresses the most-frequent inner loop of an active engineer &mdash; <code>git pull &amp;&amp; git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> &mdash; into a single ZLE keystroke. The current <code>$BUFFER</code> becomes the commit message; <kbd>Ctrl-S</kbd> dispatches <code>zsh-gacp-NoCheck</code> (fire-and-forget), <kbd>Ctrl-F Ctrl-S</kbd> dispatches <code>zsh-gacp-CheckDiff</code> (side-by-side diff piped to <code>less</code>, single-key confirmation). To free <kbd>Ctrl-S</kbd> from the terminal-driver flow-control trap, the plugin runs <code>setopt noflowcontrol</code> at load. Both widgets respect <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> &mdash; the user's <code>/etc</code>, <code>~/.ssh</code>, or any other &ldquo;do not auto-commit here&rdquo; path opts out. Source: <strong>510 zsh lines</strong> across a 268-line plugin entry + 6 autoloaded helper functions. The plugin also ships <strong>159 git aliases</strong> &mdash; the curated &ldquo;everything you actually type&rdquo; shorthand set. Pinned by <strong>35 <code>@test</code> blocks</strong> across <strong>6 zunit files</strong>.
+      </p>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-val">510</div><div class="stat-label">Zsh Lines</div></div>
+        <div class="stat-card"><div class="stat-val accent">159</div><div class="stat-label">Git Aliases</div></div>
+        <div class="stat-card"><div class="stat-val green">35</div><div class="stat-label">@test Blocks (zunit)</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Test Files</div></div>
+        <div class="stat-card"><div class="stat-val">2</div><div class="stat-label">ZLE Widgets</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Autoload Helpers</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Bindkeys (2 widgets &times; 3 keymaps)</div></div>
+        <div class="stat-card"><div class="stat-val">1</div><div class="stat-label">setopt unlock (noflowcontrol)</div></div>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">~</span>ARCHITECTURE</h2>
+
+      <table class="file-table">
+        <thead><tr><th>File</th><th class="num">Lines</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>zsh-git-acp.plugin.zsh</code></td>
+            <td class="num">268</td>
+            <td>Plugin entry. Declares the 159 git aliases (branch / checkout / diff / log / merge / rebase / push / pull / stash / submodule / worktree / cherry-pick / reset / show / status / tag families &mdash; with origin/upstream-aware variants like <code>gbuom</code>/<code>gbuod</code>/<code>gbuum</code>/<code>gbuud</code>, <code>gmom</code>/<code>gmod</code>/<code>gmum</code>/<code>gmud</code>, <code>gdom</code>/<code>gdod</code>/<code>gdum</code>/<code>gdud</code>). Provides fall-back stub definitions for <code>zpwrLoggErr</code> / <code>zpwrCommandExists</code> / <code>zpwrIsGitDir</code> / <code>zpwrLoggNotGit</code> when zpwr is not loaded. Runs the Zsh Plugin Standard <code>0=</code> header. Prepends <code>${0:h}/autoload</code> to <code>fpath</code>, autoloads all 6 helper functions, registers the two ZLE widgets, runs <code>setopt noflowcontrol</code>, binds <kbd>Ctrl-S</kbd> and <kbd>Ctrl-F Ctrl-S</kbd> in all three keymaps.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-CommitAndPush</code></td>
+            <td class="num">45</td>
+            <td>The shared backend. Validates commit message, validates git-dir, validates blacklist, validates a non-empty staged diff (<code>nothing to commit</code> guard), enumerates remotes, performs <code>git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> across each remote. If no remote is configured, the <code>pull</code> and <code>push</code> steps are skipped &mdash; useful for local-only repos.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-CheckDiff</code></td>
+            <td class="num">80</td>
+            <td>Diff-confirm widget. Validates blacklist + git-dir + non-empty buffer, then pipes <code>git diff --staged</code> through <code>less -R</code>, asks for a single-key Y/N confirmation via <code>zle -R</code> + <code>read -k 1</code>, dispatches <code>zsh-gacp-CommitAndPush</code> on Y. Largest single autoload file because it carries the inline-confirmation UX.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-NoCheck</code></td>
+            <td class="num">52</td>
+            <td>Fire-and-forget widget. Validates blacklist + git-dir + non-empty buffer, dispatches <code>zsh-gacp-CommitAndPush</code> with <code>$BUFFER</code> as the message. No confirmation prompt &mdash; one keystroke to ship.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-mainBranch</code></td>
+            <td class="num">25</td>
+            <td>Detect the main branch on the named remote (default <code>origin</code>). Tries <code>master</code> first, then <code>main</code> &mdash; returns the first one that exists as <code>refs/remotes/$remote/$branch</code>. Powers the <code>gbuom</code> / <code>gmom</code> / <code>gdom</code> / <code>gcm</code> alias family.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-devBranch</code></td>
+            <td class="num">26</td>
+            <td>Detect the dev branch on the named remote. Same shape as <code>mainBranch</code> but probes <code>dev</code> / <code>develop</code> / <code>development</code>. Powers <code>gbuod</code> / <code>gmod</code> / <code>gdod</code> / <code>gcd</code>.</td>
+          </tr>
+          <tr>
+            <td><code>autoload/zsh-gacp-CommitCount</code></td>
+            <td class="num">14</td>
+            <td>Returns the count of commits on the current branch &mdash; used by the diff-confirm widget to render a status line.</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total source</td>
+            <td class="num">510</td>
+            <td>1 entry + 6 autoload helpers &middot; pure zsh</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">#</span>TEST COVERAGE</h2>
+
+      <table class="file-table">
+        <thead><tr><th>File</th><th class="num">Tests</th><th>Pins</th></tr></thead>
+        <tbody>
+          <tr><td><code>t-aliases.zsh</code></td><td class="num">13</td><td>The 159-alias surface enumerated against expected <code>git ...</code> bodies (sampling-based since 159 individual <code>@test</code> blocks would be wasteful); branch-aware aliases evaluate their <code>$(zsh-gacp-mainBranch)</code> / <code>$(zsh-gacp-devBranch)</code> sub-shell calls correctly.</td></tr>
+          <tr><td><code>t-syntax.zsh</code></td><td class="num">2</td><td><code>zsh -n</code> over plugin entry + autoload tree.</td></tr>
+          <tr><td><code>t-contract.zsh</code></td><td class="num">3</td><td>Entrypoint stem matches dir basename; entrypoint parses; every <code>_*</code> completion file in the repo starts with <code>#compdef</code>.</td></tr>
+          <tr><td><code>t-contract2.zsh</code></td><td class="num">7</td><td>fpath augmentation uses <code>${0:h}/autoload</code> (portable across zinit / OMZ / antibody / antigen / bare-source); autoload loop uses <code>(.:t)</code>; widget names match autoload file names; bindkey lines are present for all three keymaps.</td></tr>
+          <tr><td><code>t-contract3.zsh</code></td><td class="num">5</td><td>Zinit install path; <code>setopt noflowcontrol</code> runs at source-time; the two widgets register exactly once; double-source is idempotent.</td></tr>
+          <tr><td><code>t-contract4.zsh</code></td><td class="num">5</td><td>OMZ install path; <code>zpwrLogg*</code> stub definitions only register when zpwr is absent (no clobber); <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> respected when empty.</td></tr>
+          <tr class="total-row"><td>Total</td><td class="num">35</td><td>6 zunit files &middot; alias-surface + widget-contract + install-contract</td></tr>
+        </tbody>
+      </table>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">/</span>INTEGRATION</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>Bindkey across three keymaps</h4>
+          <p>Both widgets are bound in <code>viins</code> + <code>vicmd</code> + <code>emacs</code>. Vim-emulation users hit <kbd>Ctrl-S</kbd> from insert OR command mode; emacs-mode users hit it directly. <kbd>Ctrl-F Ctrl-S</kbd> is the safer two-key escape for diff-confirm.</p>
+        </div>
+        <div class="feature-card">
+          <h4><code>setopt noflowcontrol</code></h4>
+          <p>By default the terminal driver eats <kbd>Ctrl-S</kbd> as XOFF and <kbd>Ctrl-Q</kbd> as XON &mdash; the keystroke never reaches ZLE. The plugin runs <code>setopt noflowcontrol</code> at source time to release the binding, then ZLE sees the raw <kbd>Ctrl-S</kbd>. Side effect: <kbd>Ctrl-Q</kbd> is also freed and available for user binding.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Buffer as commit message</h4>
+          <p>The pre-press <code>$BUFFER</code> &mdash; whatever the user has typed at the prompt &mdash; becomes the literal commit message via <code>git commit -m "$BUFFER"</code>. No editor pop-up, no <code>$EDITOR</code> dance. Type the message, hit <kbd>Ctrl-S</kbd>, ship.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Blacklist guard</h4>
+          <p><code>ZSH_GACP_BLACKLISTED_DIRECTORIES=(/etc ~/.ssh /var/log/repo)</code> opts out per directory. Both widgets check <code>$(pwd -P)</code> against the array before any git side effects. Inverse of opt-in: blacklist is empty by default; users add the few paths they want to protect, not the many they want to ship from.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Multi-remote push</h4>
+          <p><code>zsh-gacp-CommitAndPush</code> enumerates <code>git remote</code> and pushes to each &mdash; works in setups with both <code>origin</code> and <code>upstream</code> wired up. No-remote setups skip push entirely, so the widget is still safe for local-only experiments.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Branch detection is dynamic</h4>
+          <p>The <code>gbuom</code> / <code>gcm</code> / <code>gmom</code> / <code>gdom</code> aliases call <code>$(zsh-gacp-mainBranch)</code> at expansion time &mdash; the result is whatever <code>main</code>-or-<code>master</code> ref the current repo has on its remote. Same plugin works against a legacy <code>master</code>-named repo AND against a freshly-renamed <code>main</code> repo with zero re-config.</p>
+        </div>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">!</span>DESIGN DECISIONS</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>Two widgets, not a flag</h4>
+          <p><code>NoCheck</code> and <code>CheckDiff</code> are separate widgets, separate bindings, separate code paths. The user picks the safety level at keystroke time rather than at <code>~/.zshrc</code> time. The 2-character difference between <kbd>Ctrl-S</kbd> and <kbd>Ctrl-F Ctrl-S</kbd> is the entire UX of "I trust this" vs "show me first."</p>
+        </div>
+        <div class="feature-card">
+          <h4><code>noflowcontrol</code> as side effect, not opt-in</h4>
+          <p>Many plugins document the <code>setopt noflowcontrol</code> requirement and leave it to the user. <code>zsh-git-acp</code> just runs it at source time &mdash; the binding doesn't work without it, so making it opt-in would guarantee broken installs. The cost is one global side effect; the gain is "it just works after <code>zinit load</code>."</p>
+        </div>
+        <div class="feature-card">
+          <h4>Stub fallbacks for zpwr helpers</h4>
+          <p>The plugin defines <code>zpwrLoggErr</code>, <code>zpwrCommandExists</code>, <code>zpwrIsGitDir</code>, <code>zpwrLoggNotGit</code> ONLY when they don't already exist (<code>(( $+functions[...] ))</code> guard). Loaded under zpwr, the real implementations win; loaded standalone, the stubs keep the widgets working.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Single-key confirmation, not Y/N</h4>
+          <p>The diff-confirm widget uses <code>read -k 1</code> &mdash; one keystroke commits or aborts. No <kbd>y</kbd>+<kbd>Enter</kbd> dance. Aligns with the &ldquo;every keystroke costs&rdquo; ethos of the rest of the plugin.</p>
+        </div>
+        <div class="feature-card">
+          <h4>159 aliases as a curated set, not auto-generated</h4>
+          <p>Each alias is hand-chosen for the &ldquo;I type this multiple times an hour&rdquo; threshold. Branch-aware variants (<code>gbuom</code>, <code>gmom</code>, <code>gdom</code>) handle the four combos of {origin, upstream} &times; {main, dev} explicitly &mdash; no per-alias config required.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Helper-as-file</h4>
+          <p>Each of the 6 helper functions is its own file under <code>autoload/</code>, lazy-loaded via <code>autoload -Uz "${0:h}/autoload/"*(.:t)</code>. Cold-startup cost is the 268-line entry parse only &mdash; the widgets and helpers are parsed on first call.</p>
+        </div>
+      </div>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">@</span>FOOTPRINT</h2>
+      <ul style="font-size:12px;color:var(--text-dim);line-height:1.7;">
+        <li><strong>Disk</strong>: 1 plugin entry + 6 autoload files + 1 README. No compiled state.</li>
+        <li><strong>Memory</strong>: 159 alias entries in <code>$aliases</code> + 2 ZLE widget registrations + 6 lazy-loadable autoload symbols.</li>
+        <li><strong>Startup cost</strong>: source the entry (268 lines), no autoload bodies parsed yet.</li>
+        <li><strong>Runtime cost</strong>: 1 widget invocation + 1 <code>git</code> subprocess chain per <kbd>Ctrl-S</kbd>. No background process, no polling.</li>
+        <li><strong>External tools</strong>: <code>git</code> (required), <code>less</code> (for diff-confirm view).</li>
+        <li><strong>Side effect on the user's shell</strong>: <code>setopt noflowcontrol</code> (intentional, documented).</li>
+      </ul>
+
+    </main>
+
+    <footer style="text-align:center;padding:2rem;font-size:10px;color:var(--text-muted);font-family:'Orbitron',sans-serif;letter-spacing:2px;">
+      ZSH-GIT-ACP ENGINEERING REPORT &middot; 510 ZSH LINES &middot; 159 GIT ALIASES &middot; 35 ZUNIT TESTS &middot; 2 ZLE WIDGETS &middot; 3 KEYMAPS &middot; 6 AUTOLOAD HELPERS &middot; noflowcontrol UNLOCK &middot; MENKETECHNOLOGIES
+    </footer>
+  </div>
+
+  <script>
+    const html = document.documentElement;
+    const btnTheme = document.getElementById('btnTheme');
+    const btnCrt = document.getElementById('btnCrt');
+    const btnNeon = document.getElementById('btnNeon');
+    const crtH = document.getElementById('crtH');
+    const crtV = document.getElementById('crtV');
+    btnTheme?.addEventListener('click', () => {
+      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+    btnCrt?.addEventListener('click', () => {
+      btnCrt.classList.toggle('active');
+      const on = btnCrt.classList.contains('active');
+      if (crtH) crtH.style.display = on ? '' : 'none';
+      if (crtV) crtV.style.display = on ? '' : 'none';
+    });
+    btnNeon?.addEventListener('click', () => {
+      btnNeon.classList.toggle('active');
+      document.querySelector('.app')?.classList.toggle('neon-off');
+    });
+  </script>
+</body>
+</html>
