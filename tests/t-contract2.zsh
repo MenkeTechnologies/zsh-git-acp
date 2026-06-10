@@ -73,14 +73,19 @@
     assert "$out" same_as 'master'
 }
 
-@test 'BUG-PIN: helper fns redirect to /devBranch/null (typo, not /dev/null)' {
-    # Pin: the source has `2> /devBranch/null` in zpwrExists and
-    # zpwrIsGitDir at lines documented in the plugin. This is a typo
-    # for `/dev/null` that survives because the redirect target is
-    # silently created. Pin the current state so a fix to /dev/null
-    # is a deliberate, reviewed change.
+@test 'REGRESSION-GUARD: helper fns redirect to /dev/null (not /devBranch/null)' {
+    # Guards against reintroduction of the historical typo. The old
+    # `2> /devBranch/null` in zpwrExists / zpwrIsGitDir aborted the
+    # redirect ("no such file or directory: /devBranch/null") and the
+    # `type` / `git rev-parse` commands never ran — both helpers always
+    # returned non-zero, so every caller that gated on zpwrIsGitDir
+    # silently failed.
     local count
     count=$(grep -c '/devBranch/null' "$pluginFile" || true)
-    [[ "$count" -ge 2 ]]
+    [[ "$count" -eq 0 ]]
+    assert $? equals 0
+    grep -qE 'type "\$1" >/dev/null 2>&1' "$pluginFile"
+    assert $? equals 0
+    grep -qE 'command git rev-parse --git-dir 2> /dev/null 1>&2' "$pluginFile"
     assert $? equals 0
 }

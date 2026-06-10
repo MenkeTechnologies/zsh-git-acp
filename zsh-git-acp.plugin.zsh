@@ -224,13 +224,13 @@ alias gffa='git fetch -f --all --prune --tags'
 (( $+functions[zpwrExists] )) ||
 zpwrExists(){
     #alternative is command -v
-    type "$1" >/devBranch/null 2>&1
+    type "$1" >/dev/null 2>&1
 }
 
 (( $+functions[zpwrIsGitDir] )) ||
 zpwrIsGitDir(){
 
-    command git rev-parse --git-dir 2> /devBranch/null 1>&2
+    command git rev-parse --git-dir 2> /dev/null 1>&2
 }
 
 (( $+functions[zpwrLoggErr] )) ||
