@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <meta name="description" content="zsh-git-acp — Engineering report. git add + commit + push as a single ZLE widget. 510 zsh lines across plugin entry + 6 autoload functions, 159 git aliases, 2 ZLE widgets (zsh-gacp-NoCheck, zsh-gacp-CheckDiff) bound to Ctrl-S and Ctrl-F Ctrl-S across viins/vicmd/emacs keymaps, 35 zunit @test blocks across 6 t-*.zsh files, blacklist guard, current-buffer-as-commit-message, setopt noflowcontrol unlock.">
+  <meta name="description" content="zsh-git-acp — Engineering report. git add + commit + push as a single ZLE widget. 510 zsh lines across plugin entry + 6 autoload functions, 159 git aliases, 2 ZLE widgets (zsh-gacp-NoCheck, zsh-gacp-CheckDiff) bound to Ctrl-S and Ctrl-F Ctrl-S across viins/vicmd/emacs keymaps, 37 zunit @test blocks across 7 t-*.zsh files, blacklist guard, current-buffer-as-commit-message, setopt noflowcontrol unlock.">
   <title>zsh-git-acp &mdash; Engineering Report</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,14 +71,14 @@
 
       <h2 class="tutorial-title"><span class="step-hash">&gt;_</span>EXECUTIVE SUMMARY</h2>
       <p class="tutorial-subtitle">
-        <strong>zsh-git-acp</strong> compresses the most-frequent inner loop of an active engineer &mdash; <code>git pull &amp;&amp; git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> &mdash; into a single ZLE keystroke. The current <code>$BUFFER</code> becomes the commit message; <kbd>Ctrl-S</kbd> dispatches <code>zsh-gacp-NoCheck</code> (fire-and-forget), <kbd>Ctrl-F Ctrl-S</kbd> dispatches <code>zsh-gacp-CheckDiff</code> (side-by-side diff piped to <code>less</code>, single-key confirmation). To free <kbd>Ctrl-S</kbd> from the terminal-driver flow-control trap, the plugin runs <code>setopt noflowcontrol</code> at load. Both widgets respect <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> &mdash; the user's <code>/etc</code>, <code>~/.ssh</code>, or any other &ldquo;do not auto-commit here&rdquo; path opts out. Source: <strong>510 zsh lines</strong> across a 268-line plugin entry + 6 autoloaded helper functions. The plugin also ships <strong>159 git aliases</strong> &mdash; the curated &ldquo;everything you actually type&rdquo; shorthand set. Pinned by <strong>35 <code>@test</code> blocks</strong> across <strong>6 zunit files</strong>.
+        <strong>zsh-git-acp</strong> compresses the most-frequent inner loop of an active engineer &mdash; <code>git pull &amp;&amp; git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> &mdash; into a single ZLE keystroke. The current <code>$BUFFER</code> becomes the commit message; <kbd>Ctrl-S</kbd> dispatches <code>zsh-gacp-NoCheck</code> (fire-and-forget), <kbd>Ctrl-F Ctrl-S</kbd> dispatches <code>zsh-gacp-CheckDiff</code> (side-by-side diff piped to <code>less</code>, single-key confirmation). To free <kbd>Ctrl-S</kbd> from the terminal-driver flow-control trap, the plugin runs <code>setopt noflowcontrol</code> at load. Both widgets respect <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> &mdash; the user's <code>/etc</code>, <code>~/.ssh</code>, or any other &ldquo;do not auto-commit here&rdquo; path opts out. Source: <strong>510 zsh lines</strong> across a 268-line plugin entry + 6 autoloaded helper functions. The plugin also ships <strong>159 git aliases</strong> &mdash; the curated &ldquo;everything you actually type&rdquo; shorthand set. Pinned by <strong>37 <code>@test</code> blocks</strong> across <strong>7 zunit files</strong>.
       </p>
 
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-val">510</div><div class="stat-label">Zsh Lines</div></div>
         <div class="stat-card"><div class="stat-val accent">159</div><div class="stat-label">Git Aliases</div></div>
-        <div class="stat-card"><div class="stat-val green">35</div><div class="stat-label">@test Blocks (zunit)</div></div>
-        <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Test Files</div></div>
+        <div class="stat-card"><div class="stat-val green">37</div><div class="stat-label">@test Blocks (zunit)</div></div>
+        <div class="stat-card"><div class="stat-val">7</div><div class="stat-label">Test Files</div></div>
         <div class="stat-card"><div class="stat-val">2</div><div class="stat-label">ZLE Widgets</div></div>
         <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Autoload Helpers</div></div>
         <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Bindkeys (2 widgets &times; 3 keymaps)</div></div>
@@ -148,7 +148,8 @@
           <tr><td><code>t-contract2.zsh</code></td><td class="num">7</td><td>fpath augmentation uses <code>${0:h}/autoload</code> (portable across zinit / OMZ / antibody / antigen / bare-source); autoload loop uses <code>(.:t)</code>; widget names match autoload file names; bindkey lines are present for all three keymaps.</td></tr>
           <tr><td><code>t-contract3.zsh</code></td><td class="num">5</td><td>Zinit install path; <code>setopt noflowcontrol</code> runs at source-time; the two widgets register exactly once; double-source is idempotent.</td></tr>
           <tr><td><code>t-contract4.zsh</code></td><td class="num">5</td><td>OMZ install path; <code>zpwrLogg*</code> stub definitions only register when zpwr is absent (no clobber); <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> respected when empty.</td></tr>
-          <tr class="total-row"><td>Total</td><td class="num">35</td><td>6 zunit files &middot; alias-surface + widget-contract + install-contract</td></tr>
+          <tr><td><code>t-nocheck-blacklist.zsh</code></td><td class="num">2</td><td>Pins the blacklist variable-name surface: <code>zsh-gacp-NoCheck</code> reads <code>$GACP_BLACKLISTED_DIRECTORIES</code> while <code>zsh-gacp-CheckDiff</code> + <code>zsh-gacp-CommitAndPush</code> read the documented <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code>; the two non-divergent widgets are pinned to the documented name as canon.</td></tr>
+          <tr class="total-row"><td>Total</td><td class="num">37</td><td>7 zunit files &middot; alias-surface + widget-contract + install-contract</td></tr>
         </tbody>
       </table>
 
@@ -229,7 +230,7 @@
     </main>
 
     <footer style="text-align:center;padding:2rem;font-size:10px;color:var(--text-muted);font-family:'Orbitron',sans-serif;letter-spacing:2px;">
-      ZSH-GIT-ACP ENGINEERING REPORT &middot; 510 ZSH LINES &middot; 159 GIT ALIASES &middot; 35 ZUNIT TESTS &middot; 2 ZLE WIDGETS &middot; 3 KEYMAPS &middot; 6 AUTOLOAD HELPERS &middot; noflowcontrol UNLOCK &middot; MENKETECHNOLOGIES
+      ZSH-GIT-ACP ENGINEERING REPORT &middot; 510 ZSH LINES &middot; 159 GIT ALIASES &middot; 37 ZUNIT TESTS &middot; 2 ZLE WIDGETS &middot; 3 KEYMAPS &middot; 6 AUTOLOAD HELPERS &middot; noflowcontrol UNLOCK &middot; MENKETECHNOLOGIES
     </footer>
   </div>
 
