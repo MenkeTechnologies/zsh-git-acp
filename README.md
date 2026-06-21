@@ -14,7 +14,7 @@
 
 ### `[git add + commit + push IN ONE KEYBINDING]`
 
-> *"`Ctrl-G Ctrl-A` — stage all, commit, push. Done."*
+> *"`Ctrl-S` — pull, stage all, commit, push. Done."*
 
 This plugin adds various git aliases and two ZLE keybindings.
 
