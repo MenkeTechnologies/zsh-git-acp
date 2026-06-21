@@ -68,47 +68,126 @@
 
     <main class="tutorial-main">
       <h2 class="tutorial-title"><span class="step-hash">&gt;_</span>ZSH-GIT-ACP</h2>
-      <p class="tutorial-subtitle"><strong><code>Ctrl-S</code> &mdash; stage all, commit with the current buffer as message, push.</strong> Two ZLE widgets that take <code>BUFFER</code> as the commit message and run <code>git pull</code>, <code>git add</code>, <code>git commit</code>, <code>git push</code>. If there is no remote the pull and push steps are omitted. Plus 159 git aliases.</p>
+      <p class="tutorial-subtitle"><strong><code>Ctrl-S</code> &mdash; stage all, commit with the current buffer as message, push.</strong> Two ZLE widgets take the current <code>$BUFFER</code> as the commit message and run <code>git pull --rebase</code>, <code>git add .</code>, <code>git commit -m "$BUFFER"</code>, <code>git push</code>. When the repo has no remote, the pull and push steps are skipped. Plus 159 git aliases declared in <code>zsh-git-acp.plugin.zsh</code>. Pure zsh, no compiled state, no background process.</p>
+
+      <section class="tutorial-section">
+        <h2>Overview</h2>
+        <p>This plugin compresses the inner loop <code>git pull &amp;&amp; git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> into a single keystroke. It registers two ZLE widgets, binds them across the <code>viins</code>, <code>vicmd</code> and <code>emacs</code> keymaps, and ships a curated set of 159 git aliases. Six autoload helper functions back the widgets and the branch-aware aliases.</p>
+        <table class="example-tbl">
+          <tbody>
+            <tr><td>Source size</td><td>510 zsh lines &mdash; 268-line plugin entry + 6 autoload helpers</td></tr>
+            <tr><td>Aliases</td><td>159 git aliases (line 12&ndash;218 of the plugin)</td></tr>
+            <tr><td>ZLE widgets</td><td><code>zsh-gacp-NoCheck</code>, <code>zsh-gacp-CheckDiff</code></td></tr>
+            <tr><td>Key bindings</td><td><code>^S</code> and <code>^F^S</code> in <code>viins</code> + <code>vicmd</code> + <code>emacs</code></td></tr>
+            <tr><td>Required tools</td><td><code>git</code>; <code>less</code> and a diff tool for the <code>^F^S</code> review path</td></tr>
+            <tr><td>Shell side effect</td><td><code>setopt noflowcontrol</code> at source time (frees <code>^S</code>/<code>^Q</code>)</td></tr>
+          </tbody>
+        </table>
+      </section>
 
       <section class="tutorial-section">
         <h2>Install</h2>
+        <p>The plugin is a single sourced file. Pick whichever loader matches your setup.</p>
 <pre># Zinit
+source "$HOME/.zinit/bin/zinit.zsh"
 zinit ice lucid nocompile
 zinit load MenkeTechnologies/zsh-git-acp
 
 # Oh My Zsh
-git clone https://github.com/MenkeTechnologies/zsh-git-acp \
-    "$HOME/.oh-my-zsh/custom/plugins/zsh-git-acp"
-# then: plugins+=(zsh-git-acp)
+cd "$HOME/.oh-my-zsh/custom/plugins" \
+    && git clone https://github.com/MenkeTechnologies/zsh-git-acp.git
+# then add zsh-git-acp to the plugins=( ... ) array in ~/.zshrc
 
 # Manual
 git clone https://github.com/MenkeTechnologies/zsh-git-acp
 source zsh-git-acp/zsh-git-acp.plugin.zsh</pre>
+        <p>On load the plugin runs the Zsh Plugin Standard <code>0=</code> header to resolve its own path, prepends <code>${0:h}/autoload</code> to <code>fpath</code>, autoloads the six helper functions with <code>autoload -Uz "${0:h}/autoload/"*(.:t)</code>, defines the 159 aliases, registers the two widgets with <code>zle -N</code>, runs <code>setopt noflowcontrol</code>, and binds the keys. Sourcing is idempotent &mdash; re-sourcing does not duplicate aliases or widgets.</p>
       </section>
 
       <section class="tutorial-section">
         <h2>Key bindings</h2>
         <table class="example-tbl">
           <tbody>
-            <tr><td><code>^S</code> (viins + vicmd)</td><td><code>zsh-gacp-NoCheck</code> &mdash; pull / add / commit / push with no confirmation. Plugin runs <code>setopt noflowcontrol</code> so <code>^S</code> reaches ZLE.</td></tr>
-            <tr><td><code>^F^S</code> (viins + vicmd)</td><td><code>zsh-gacp-CheckDiff</code> &mdash; same flow but shows side-by-side diff piped into <code>less</code> and prompts for confirmation.</td></tr>
+            <tr><td><code>^S</code> (viins + vicmd + emacs)</td><td><code>zsh-gacp-NoCheck</code> &mdash; pull / add / commit / push with no confirmation. The plugin runs <code>setopt noflowcontrol</code> so <code>^S</code> reaches ZLE instead of being eaten as terminal XOFF.</td></tr>
+            <tr><td><code>^F^S</code> (viins + vicmd + emacs)</td><td><code>zsh-gacp-CheckDiff</code> &mdash; stages, then shows the diff piped into <code>less -R</code> and prompts for a single-key confirmation before committing and pushing.</td></tr>
           </tbody>
         </table>
-        <p>Both widgets check the current directory against <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> and abort with an error if matched: <code>export ZSH_GACP_BLACKLISTED_DIRECTORIES=(dir1 dir2)</code>.</p>
+        <p>Both widgets take the pre-press <code>$BUFFER</code> as the literal commit message (<code>git commit -m "$BUFFER"</code>) &mdash; no editor pop-up. On success the buffer is pushed to history with <code>print -sr</code> and the line is cleared with <code>zle .kill-whole-line</code>. The exact bindkey lines from the plugin:</p>
+<pre>bindkey -M viins '^S' zsh-gacp-NoCheck
+bindkey -M vicmd '^S' zsh-gacp-NoCheck
+bindkey -M emacs '^S' zsh-gacp-NoCheck
+
+bindkey -M viins '^F^S' zsh-gacp-CheckDiff
+bindkey -M vicmd '^F^S' zsh-gacp-CheckDiff
+bindkey -M emacs '^F^S' zsh-gacp-CheckDiff</pre>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>The two widgets</h2>
+        <table class="example-tbl">
+          <tbody>
+            <tr><td><code>zsh-gacp-NoCheck</code></td><td>Validates the directory against the blacklist, that the cwd is a git dir (<code>zpwrIsGitDir</code>), that <code>$BUFFER</code> is non-empty, and that <code>git status</code> does not report <code>nothing to commit</code>. Then it calls <code>zsh-gacp-CommitAndPush "$BUFFER"</code> &mdash; no diff, no prompt.</td></tr>
+            <tr><td><code>zsh-gacp-CheckDiff</code></td><td>Same guards, then runs <code>git add .</code> and shows a diff for review: it uses <code>gitSdiffColorizer.pl | less -R</code> if that script is on <code>$PATH</code>, otherwise <code>git difftool -y -x HEAD * | less -R</code>. It then prints a <code>&gt;&gt;&gt;&gt;&gt;&gt; Push?</code> prompt and reads one key; on <code>y</code> it calls <code>zsh-gacp-CommitAndPush "$BUFFER"</code>.</td></tr>
+            <tr><td><code>zsh-gacp-CommitAndPush</code></td><td>The shared backend. Rejects an empty message, checks git-dir, checks the blacklist, and bails on <code>nothing to commit</code>. If any remote exists it runs <code>git pull --rebase</code>, then always <code>git add .</code> + <code>git commit -m "$1"</code>, then <code>git push</code> if a remote exists. The push is a plain <code>git push</code> &mdash; no <code>--force</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Configuration &mdash; directory blacklist</h2>
+        <p>To stop the widgets from auto-committing in particular directories, set an array of absolute paths. A widget compares <code>$(pwd -P)</code> against each entry and aborts with a red error if matched:</p>
+<pre>export ZSH_GACP_BLACKLISTED_DIRECTORIES=(/etc "$HOME/.ssh" /var/log/repo)</pre>
+        <p>Note the variable name differs by widget in the current source: <code>zsh-gacp-CheckDiff</code> and <code>zsh-gacp-CommitAndPush</code> read <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> (the documented name), while <code>zsh-gacp-NoCheck</code> reads the un-prefixed <code>$GACP_BLACKLISTED_DIRECTORIES</code>. This divergence is pinned by a test (<code>t-nocheck-blacklist.zsh</code>). To blacklist a directory for every path, export both names.</p>
+        <p>The plugin also sets two defaults at load: <code>ZPWR_DEV_BRANCH="devBranch"</code> and <code>ZPWR_MAIN_BRANCH="master"</code>.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Branch detection</h2>
+        <p>Many aliases call helper functions at expansion time so the same alias works whether a repo uses <code>master</code> or <code>main</code>:</p>
+        <table class="example-tbl">
+          <tbody>
+            <tr><td><code>zsh-gacp-mainBranch [remote]</code></td><td>Probes <code>refs/remotes/$remote/$branch</code> for <code>master</code> then <code>main</code>; echoes the first that exists, else <code>master</code>. Default remote is <code>origin</code>; returns 1 outside a git dir.</td></tr>
+            <tr><td><code>zsh-gacp-devBranch [remote]</code></td><td>Probes <code>development</code>, <code>develop</code>, <code>devel</code> in that order; echoes the first that exists, else <code>dev</code>. Default remote is <code>origin</code>.</td></tr>
+            <tr><td><code>zsh-gacp-CommitAndPush</code> (file)</td><td>Shared commit/push backend (see above).</td></tr>
+            <tr><td><code>zsh-gacp-CommitCount</code> (file)</td><td>Returns <code>git rev-list HEAD | wc -l</code>, the commit count of the current branch. Standalone helper, not wired into the widgets.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="tutorial-section">
         <h2>Aliases (sample)</h2>
+        <p>The 159 aliases cover the branch / checkout / diff / fetch / log / merge / pull / push / remote / reset / tag families, each with origin- and upstream-aware variants. A representative slice:</p>
         <table class="example-tbl">
           <tbody>
-            <tr><td><code>gbuom</code></td><td><code>git branch -u origin/$(zsh-gacp-mainBranch)</code></td></tr>
+            <tr><td><code>gacp</code></td><td><code>git add . &amp;&amp; git commit -m '' &amp;&amp; git push</code></td></tr>
+            <tr><td><code>gac</code></td><td><code>git add . &amp;&amp; git commit -m ''</code></td></tr>
+            <tr><td><code>gbuom</code> / <code>gbuod</code></td><td><code>git branch -u origin/$(zsh-gacp-mainBranch)</code> / dev</td></tr>
             <tr><td><code>gcm</code> / <code>gcd</code></td><td>checkout main / dev branch</td></tr>
             <tr><td><code>gdom</code> / <code>gdod</code></td><td><code>git diff -w</code> against origin main / dev</td></tr>
+            <tr><td><code>gmom</code> / <code>gmod</code></td><td><code>git merge origin/</code> main / dev</td></tr>
+            <tr><td><code>glr</code> / <code>gj</code></td><td><code>git pull --rebase</code> / <code>git pull --rebase --autostash -v</code></td></tr>
+            <tr><td><code>gpf</code> / <code>gpfsup</code></td><td><code>git push --force</code> / force push + set upstream to current HEAD</td></tr>
             <tr><td><code>glgf</code></td><td><code>git log --stat --format=fuller</code></td></tr>
             <tr><td><code>gsa</code></td><td><code>git rev-list --all | xargs git grep -C 5</code></td></tr>
+            <tr><td><code>bk</code> / <code>bki</code></td><td><code>git clean -dff &amp;&amp; git reset --hard HEAD &amp;&amp; git clean -dff</code> (<code>-x</code> variant)</td></tr>
+            <tr><td><code>allRebase</code></td><td><code>git rebase -i $(git rev-list --max-parents=0 HEAD)</code></td></tr>
           </tbody>
         </table>
-        <p>The full 159-alias list lives in the <a href="https://github.com/MenkeTechnologies/zsh-git-acp#0x04-159-git-aliases">README "159 git aliases" section</a>.</p>
+        <p>The full 159-alias list lives in the <a href="https://github.com/MenkeTechnologies/zsh-git-acp#0x04-159-git-aliases">README "159 git aliases" section</a>. For the per-file source breakdown and test coverage, see the <a href="report.html">Engineering Report</a>.</p>
+      </section>
+
+      <section class="tutorial-section">
+        <h2>Troubleshooting</h2>
+        <table class="example-tbl">
+          <tbody>
+            <tr><td><code>^S</code> freezes the terminal</td><td>Flow control is still on. The plugin runs <code>setopt noflowcontrol</code>; confirm the plugin actually sourced and that nothing later re-enables flow control with <code>setopt flowcontrol</code>.</td></tr>
+            <tr><td>&ldquo;is not a git dir&rdquo;</td><td>The widget ran outside a git working tree. <code>git rev-parse --git-dir</code> must succeed in the cwd.</td></tr>
+            <tr><td>&ldquo;No commit message&rdquo;</td><td>The command-line buffer was empty (only whitespace). Type the message first, then press <code>^S</code>.</td></tr>
+            <tr><td>&ldquo;Nothing to commit&rdquo;</td><td><code>git status</code> reports a clean tree after <code>git add .</code> &mdash; there is nothing to record.</td></tr>
+            <tr><td>BLACKLISTED message</td><td>The cwd matches an entry in the blacklist array. Remove the path or run from elsewhere.</td></tr>
+            <tr><td>No push happened</td><td>The repo has no configured remote; <code>git remote</code> is empty, so pull and push are skipped by design.</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="tutorial-section">

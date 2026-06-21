@@ -95,17 +95,17 @@
           <tr>
             <td><code>zsh-git-acp.plugin.zsh</code></td>
             <td class="num">268</td>
-            <td>Plugin entry. Declares the 159 git aliases (branch / checkout / diff / log / merge / rebase / push / pull / stash / submodule / worktree / cherry-pick / reset / show / status / tag families &mdash; with origin/upstream-aware variants like <code>gbuom</code>/<code>gbuod</code>/<code>gbuum</code>/<code>gbuud</code>, <code>gmom</code>/<code>gmod</code>/<code>gmum</code>/<code>gmud</code>, <code>gdom</code>/<code>gdod</code>/<code>gdum</code>/<code>gdud</code>). Provides fall-back stub definitions for <code>zpwrLoggErr</code> / <code>zpwrCommandExists</code> / <code>zpwrIsGitDir</code> / <code>zpwrLoggNotGit</code> when zpwr is not loaded. Runs the Zsh Plugin Standard <code>0=</code> header. Prepends <code>${0:h}/autoload</code> to <code>fpath</code>, autoloads all 6 helper functions, registers the two ZLE widgets, runs <code>setopt noflowcontrol</code>, binds <kbd>Ctrl-S</kbd> and <kbd>Ctrl-F Ctrl-S</kbd> in all three keymaps.</td>
+            <td>Plugin entry. Declares the 159 git aliases (branch / checkout / diff / log / merge / rebase / push / pull / stash / submodule / worktree / cherry-pick / reset / show / status / tag families &mdash; with origin/upstream-aware variants like <code>gbuom</code>/<code>gbuod</code>/<code>gbuum</code>/<code>gbuud</code>, <code>gmom</code>/<code>gmod</code>/<code>gmum</code>/<code>gmud</code>, <code>gdom</code>/<code>gdod</code>/<code>gdum</code>/<code>gdud</code>). Provides fall-back stub definitions for <code>zpwrExists</code> / <code>zpwrIsGitDir</code> / <code>zpwrLoggErr</code> / <code>zpwrLoggNotGit</code> when zpwr is not loaded. Runs the Zsh Plugin Standard <code>0=</code> header. Prepends <code>${0:h}/autoload</code> to <code>fpath</code>, autoloads all 6 helper functions, registers the two ZLE widgets, runs <code>setopt noflowcontrol</code>, binds <kbd>Ctrl-S</kbd> and <kbd>Ctrl-F Ctrl-S</kbd> in all three keymaps.</td>
           </tr>
           <tr>
             <td><code>autoload/zsh-gacp-CommitAndPush</code></td>
             <td class="num">45</td>
-            <td>The shared backend. Validates commit message, validates git-dir, validates blacklist, validates a non-empty staged diff (<code>nothing to commit</code> guard), enumerates remotes, performs <code>git add . &amp;&amp; git commit -m "..." &amp;&amp; git push</code> across each remote. If no remote is configured, the <code>pull</code> and <code>push</code> steps are skipped &mdash; useful for local-only repos.</td>
+            <td>The shared backend. Validates commit message, validates git-dir, validates blacklist, then guards on <code>nothing to commit</code> from <code>git status</code>. Captures <code>git remote</code>; if any remote exists it runs <code>git pull --rebase</code>, then always <code>git add . &amp;&amp; git commit -m "..."</code>, then a plain <code>git push</code> (no <code>--force</code>) when a remote exists. If no remote is configured, the <code>pull</code> and <code>push</code> steps are skipped &mdash; useful for local-only repos.</td>
           </tr>
           <tr>
             <td><code>autoload/zsh-gacp-CheckDiff</code></td>
             <td class="num">80</td>
-            <td>Diff-confirm widget. Validates blacklist + git-dir + non-empty buffer, then pipes <code>git diff --staged</code> through <code>less -R</code>, asks for a single-key Y/N confirmation via <code>zle -R</code> + <code>read -k 1</code>, dispatches <code>zsh-gacp-CommitAndPush</code> on Y. Largest single autoload file because it carries the inline-confirmation UX.</td>
+            <td>Diff-confirm widget. Validates blacklist + git-dir + non-empty buffer + <code>nothing to commit</code> guard, runs <code>git add .</code>, then shows the diff: <code>gitSdiffColorizer.pl | less -R</code> if that script is on <code>$PATH</code>, else <code>git difftool -y -x HEAD * | less -R</code>. It prints a <code>&gt;&gt;&gt;&gt;&gt;&gt; Push?</code> prompt, reads one key with <code>read -k 1</code>, and dispatches <code>zsh-gacp-CommitAndPush</code> on <code>y</code>. Largest single autoload file because it carries the inline-confirmation UX.</td>
           </tr>
           <tr>
             <td><code>autoload/zsh-gacp-NoCheck</code></td>
@@ -120,12 +120,12 @@
           <tr>
             <td><code>autoload/zsh-gacp-devBranch</code></td>
             <td class="num">26</td>
-            <td>Detect the dev branch on the named remote. Same shape as <code>mainBranch</code> but probes <code>dev</code> / <code>develop</code> / <code>development</code>. Powers <code>gbuod</code> / <code>gmod</code> / <code>gdod</code> / <code>gcd</code>.</td>
+            <td>Detect the dev branch on the named remote. Same shape as <code>mainBranch</code> but probes <code>development</code> / <code>develop</code> / <code>devel</code> in that order, falling back to <code>dev</code>. Powers <code>gbuod</code> / <code>gmod</code> / <code>gdod</code> / <code>gcd</code>.</td>
           </tr>
           <tr>
             <td><code>autoload/zsh-gacp-CommitCount</code></td>
             <td class="num">14</td>
-            <td>Returns the count of commits on the current branch &mdash; used by the diff-confirm widget to render a status line.</td>
+            <td>Standalone helper that echoes <code>git rev-list HEAD | wc -l</code> &mdash; the commit count of the current branch. Not wired into the widgets. Note: its inner function is mis-named <code>zsh-gacp-CommitAndPush</code> and self-invokes that name (pinned as a known bug by <code>t-contract3.zsh</code>).</td>
           </tr>
           <tr class="total-row">
             <td>Total source</td>
@@ -144,11 +144,11 @@
         <tbody>
           <tr><td><code>t-aliases.zsh</code></td><td class="num">13</td><td>The 159-alias surface enumerated against expected <code>git ...</code> bodies (sampling-based since 159 individual <code>@test</code> blocks would be wasteful); branch-aware aliases evaluate their <code>$(zsh-gacp-mainBranch)</code> / <code>$(zsh-gacp-devBranch)</code> sub-shell calls correctly.</td></tr>
           <tr><td><code>t-syntax.zsh</code></td><td class="num">2</td><td><code>zsh -n</code> over plugin entry + autoload tree.</td></tr>
-          <tr><td><code>t-contract.zsh</code></td><td class="num">3</td><td>Entrypoint stem matches dir basename; entrypoint parses; every <code>_*</code> completion file in the repo starts with <code>#compdef</code>.</td></tr>
-          <tr><td><code>t-contract2.zsh</code></td><td class="num">7</td><td>fpath augmentation uses <code>${0:h}/autoload</code> (portable across zinit / OMZ / antibody / antigen / bare-source); autoload loop uses <code>(.:t)</code>; widget names match autoload file names; bindkey lines are present for all three keymaps.</td></tr>
-          <tr><td><code>t-contract3.zsh</code></td><td class="num">5</td><td>Zinit install path; <code>setopt noflowcontrol</code> runs at source-time; the two widgets register exactly once; double-source is idempotent.</td></tr>
-          <tr><td><code>t-contract4.zsh</code></td><td class="num">5</td><td>OMZ install path; <code>zpwrLogg*</code> stub definitions only register when zpwr is absent (no clobber); <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code> respected when empty.</td></tr>
-          <tr><td><code>t-nocheck-blacklist.zsh</code></td><td class="num">2</td><td>Pins the blacklist variable-name surface: <code>zsh-gacp-NoCheck</code> reads <code>$GACP_BLACKLISTED_DIRECTORIES</code> while <code>zsh-gacp-CheckDiff</code> + <code>zsh-gacp-CommitAndPush</code> read the documented <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code>; the two non-divergent widgets are pinned to the documented name as canon.</td></tr>
+          <tr><td><code>t-contract.zsh</code></td><td class="num">3</td><td>Entrypoint stem matches plugin directory basename; entrypoint parses cleanly under <code>zsh -n</code>; every completion file starts with a <code>#compdef</code> directive.</td></tr>
+          <tr><td><code>t-contract2.zsh</code></td><td class="num">7</td><td><code>zle -N</code> registers both widgets; <code>setopt noflowcontrol</code> frees <code>^S</code>; <code>^S</code> and <code>^F^S</code> are wired on viins AND vicmd AND emacs; <code>ZPWR_DEV_BRANCH</code> defaults to <code>devBranch</code> and <code>ZPWR_MAIN_BRANCH</code> to <code>master</code>; regression-guard that helper fns redirect to <code>/dev/null</code>.</td></tr>
+          <tr><td><code>t-contract3.zsh</code></td><td class="num">5</td><td><code>mainBranch</code> fallback covers master AND main; <code>devBranch</code> covers development/develop/devel; <code>mainBranch</code> returns 1 outside a git dir; the flagship <code>gacp</code> alias chains via <code>&amp;&amp;</code>; BUG-PIN that <code>zsh-gacp-CommitCount</code> ends with the wrong self-invocation.</td></tr>
+          <tr><td><code>t-contract4.zsh</code></td><td class="num">5</td><td><code>CommitAndPush</code> rejects an empty message before any git call; sequence is pull --rebase &rarr; add &rarr; commit &rarr; push; push is plain <code>git push</code> with NO --force; pull-rebase and push BOTH gated on <code>[[ -n $remotes ]]</code>; the blacklist loop iterates <code>ZSH_GACP_BLACKLISTED_DIRECTORIES</code>.</td></tr>
+          <tr><td><code>t-nocheck-blacklist.zsh</code></td><td class="num">2</td><td>BUG-PIN: <code>zsh-gacp-NoCheck</code> reads the un-prefixed <code>$GACP_BLACKLISTED_DIRECTORIES</code>, NOT the documented <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code>; the two non-buggy widgets (<code>CheckDiff</code> + <code>CommitAndPush</code>) agree on the documented name.</td></tr>
           <tr class="total-row"><td>Total</td><td class="num">37</td><td>7 zunit files &middot; alias-surface + widget-contract + install-contract</td></tr>
         </tbody>
       </table>
@@ -175,8 +175,8 @@
           <p><code>ZSH_GACP_BLACKLISTED_DIRECTORIES=(/etc ~/.ssh /var/log/repo)</code> opts out per directory. Both widgets check <code>$(pwd -P)</code> against the array before any git side effects. Inverse of opt-in: blacklist is empty by default; users add the few paths they want to protect, not the many they want to ship from.</p>
         </div>
         <div class="feature-card">
-          <h4>Multi-remote push</h4>
-          <p><code>zsh-gacp-CommitAndPush</code> enumerates <code>git remote</code> and pushes to each &mdash; works in setups with both <code>origin</code> and <code>upstream</code> wired up. No-remote setups skip push entirely, so the widget is still safe for local-only experiments.</p>
+          <h4>Remote-aware push</h4>
+          <p><code>zsh-gacp-CommitAndPush</code> captures <code>git remote</code> once and gates BOTH the <code>git pull --rebase</code> and the final <code>git push</code> on <code>[[ -n $remotes ]]</code>. The push is a plain <code>git push</code> &mdash; no <code>--force</code> / <code>--force-with-lease</code>. No-remote setups skip pull and push entirely, so the widget is still safe for local-only experiments.</p>
         </div>
         <div class="feature-card">
           <h4>Branch detection is dynamic</h4>
@@ -199,7 +199,7 @@
         </div>
         <div class="feature-card">
           <h4>Stub fallbacks for zpwr helpers</h4>
-          <p>The plugin defines <code>zpwrLoggErr</code>, <code>zpwrCommandExists</code>, <code>zpwrIsGitDir</code>, <code>zpwrLoggNotGit</code> ONLY when they don't already exist (<code>(( $+functions[...] ))</code> guard). Loaded under zpwr, the real implementations win; loaded standalone, the stubs keep the widgets working.</p>
+          <p>The plugin defines <code>zpwrExists</code>, <code>zpwrIsGitDir</code>, <code>zpwrLoggErr</code>, <code>zpwrLoggNotGit</code> ONLY when they don't already exist (<code>(( $+functions[...] ))</code> guard). Loaded under zpwr, the real implementations win; loaded standalone, the stubs keep the widgets working.</p>
         </div>
         <div class="feature-card">
           <h4>Single-key confirmation, not Y/N</h4>
@@ -217,13 +217,49 @@
 
       <hr class="section-rule">
 
+      <h2 class="tutorial-title"><span class="step-hash">$</span>ALIAS FAMILIES</h2>
+      <p class="tutorial-subtitle">The 159 aliases (plugin lines 12&ndash;218) are organized by git verb. The naming scheme is consistent: a leading <code>g</code>, the verb (<code>p</code>=push, <code>l</code>=pull, <code>f</code>=fetch, <code>co</code>=checkout, <code>m</code>=merge, <code>d</code>=diff, <code>r</code>=reset/remote, <code>b</code>=branch), then optional <code>f</code> for <code>--force</code> / <code>r</code> for <code>--rebase</code> / <code>o</code>/<code>u</code> for origin/upstream / <code>m</code>/<code>d</code> for main/dev branch.</p>
+
+      <table class="file-table">
+        <thead><tr><th>Family</th><th>Examples</th><th>Shape</th></tr></thead>
+        <tbody>
+          <tr><td>Flagship acp</td><td><code>gacp</code>, <code>gac</code></td><td><code>git add . &amp;&amp; git commit -m '' &amp;&amp; git push</code> chained via <code>&amp;&amp;</code> (and the <code>-c</code> variant without push).</td></tr>
+          <tr><td>Push</td><td><code>gpo</code>, <code>gpa</code>, <code>gpf</code>, <code>gpfsup</code>, <code>gpom</code>, <code>gpfoat</code></td><td>plain / all / force / set-upstream / branch-targeted (<code>$_m:$_m</code>) / tags variants for origin, upstream and heroku.</td></tr>
+          <tr><td>Pull</td><td><code>glr</code>, <code>glom</code>, <code>glrom</code>, <code>glfom</code>, <code>glrfomd</code>, <code>gj</code></td><td>rebase / force / branch-mapping (<code>main:dev</code>) combinations; <code>gj</code> is <code>pull --rebase --autostash -v</code>.</td></tr>
+          <tr><td>Fetch</td><td><code>gfo</code>, <code>gfu</code>, <code>gfom</code>, <code>gffa</code></td><td>origin / upstream, per-branch, force, and <code>--all --prune --tags</code>.</td></tr>
+          <tr><td>Checkout</td><td><code>gcm</code>, <code>gcd</code>, <code>gcom</code>, <code>gcood</code>, <code>gcofum</code></td><td>main / dev, origin/upstream-tracking, force (<code>-f</code>) variants.</td></tr>
+          <tr><td>Merge / Diff</td><td><code>gmom</code>, <code>gmud</code>, <code>gdom</code>, <code>gdud</code></td><td>merge or <code>diff -w</code> against {origin,upstream}/{main,dev}.</td></tr>
+          <tr><td>Reset / Remote / Branch</td><td><code>grom</code>, <code>grhs</code>, <code>grao</code>, <code>grr</code>, <code>gbuom</code>, <code>gbv</code></td><td><code>reset --hard</code> to a remote ref, soft/mixed reset, remote add/remove/rename, branch set-upstream, branch list.</td></tr>
+          <tr><td>Log / Inspect</td><td><code>glgf</code>, <code>gld</code>, <code>glaa</code>, <code>glz</code>, <code>glzz</code>, <code>gsa</code></td><td>fuller-format and pretty graph logs with <code>--stat -p</code>; <code>gsa</code> greps all history.</td></tr>
+          <tr><td>Tag / Clean</td><td><code>gt</code>, <code>gpot</code>, <code>bk</code>, <code>bki</code>, <code>allRebase</code></td><td>tag, push tags, hard clean + reset, interactive root rebase.</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--text-dim);">Branch-targeted aliases (suffixes ending in <code>m</code>/<code>d</code>) use <code>_m=$(zsh-gacp-mainBranch)</code> / <code>_d=$(zsh-gacp-devBranch)</code> captured in a throwaway variable that is <code>unset</code> after the command, or inline <code>$(...)</code> expansion, so they resolve to the actual branch name of the current repo.</p>
+
+      <hr class="section-rule">
+
+      <h2 class="tutorial-title"><span class="step-hash">%</span>KNOWN BUGS (PINNED BY TESTS)</h2>
+      <p class="tutorial-subtitle">The suite pins two real defects in the current source as BUG-PIN tests &mdash; documenting current behavior so a future change to it is a deliberate, visible diff rather than an accidental regression.</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>NoCheck reads the un-prefixed blacklist var</h4>
+          <p><code>zsh-gacp-NoCheck</code> iterates <code>$GACP_BLACKLISTED_DIRECTORIES</code>, while the documented name &mdash; used by <code>CheckDiff</code> and <code>CommitAndPush</code> &mdash; is <code>$ZSH_GACP_BLACKLISTED_DIRECTORIES</code>. To blacklist a directory for the <code>^S</code> path too, export both names. Pinned by <code>t-nocheck-blacklist.zsh</code>.</p>
+        </div>
+        <div class="feature-card">
+          <h4>CommitCount self-invokes the wrong name</h4>
+          <p>The body of <code>autoload/zsh-gacp-CommitCount</code> defines and calls a function named <code>zsh-gacp-CommitAndPush</code> (rather than <code>zsh-gacp-CommitCount</code>). The intended <code>git rev-list HEAD | wc -l</code> still runs, but the symbol naming is wrong. Pinned by <code>t-contract3.zsh</code>.</p>
+        </div>
+      </div>
+
+      <hr class="section-rule">
+
       <h2 class="tutorial-title"><span class="step-hash">@</span>FOOTPRINT</h2>
       <ul style="font-size:12px;color:var(--text-dim);line-height:1.7;">
         <li><strong>Disk</strong>: 1 plugin entry + 6 autoload files + 1 README. No compiled state.</li>
         <li><strong>Memory</strong>: 159 alias entries in <code>$aliases</code> + 2 ZLE widget registrations + 6 lazy-loadable autoload symbols.</li>
         <li><strong>Startup cost</strong>: source the entry (268 lines), no autoload bodies parsed yet.</li>
         <li><strong>Runtime cost</strong>: 1 widget invocation + 1 <code>git</code> subprocess chain per <kbd>Ctrl-S</kbd>. No background process, no polling.</li>
-        <li><strong>External tools</strong>: <code>git</code> (required), <code>less</code> (for diff-confirm view).</li>
+        <li><strong>External tools</strong>: <code>git</code> (required), <code>less</code> + a diff tool (<code>gitSdiffColorizer.pl</code> if present, else <code>git difftool</code>) for the diff-confirm view.</li>
         <li><strong>Side effect on the user's shell</strong>: <code>setopt noflowcontrol</code> (intentional, documented).</li>
       </ul>
 
