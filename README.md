@@ -20,6 +20,8 @@ This plugin adds various git aliases and two ZLE keybindings.
 
 ### [`strykelang`](https://github.com/MenkeTechnologies/strykelang) &middot; [`zshrs`](https://github.com/MenkeTechnologies/zshrs) · [`MenkeTechnologiesMeta`](https://github.com/MenkeTechnologies/MenkeTechnologiesMeta) · [`zsh-git-repo-cache`](https://github.com/MenkeTechnologies/zsh-git-repo-cache) · [`zsh-sudo`](https://github.com/MenkeTechnologies/zsh-sudo) · [`zsh-sed-sub`](https://github.com/MenkeTechnologies/zsh-sed-sub) · [`zsh-more-completions`](https://github.com/MenkeTechnologies/zsh-more-completions) · [`zpwr`](https://github.com/MenkeTechnologies/zpwr)
 
+### [`Read the Docs`](https://menketechnologies.github.io/zsh-git-acp/) &middot; [`Engineering Report`](https://menketechnologies.github.io/zsh-git-acp/report.html)
+
 ---
 
 ## Table of Contents
